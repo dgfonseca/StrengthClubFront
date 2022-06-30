@@ -10,11 +10,12 @@ import { getClientes } from "../apis/Clientes";
 import {crearSesion,getSesiones,registrarAsistencia,desagendarSesion} from "../apis/Sesiones"
 import {getEntrenadores} from "../apis/Entrenadores"
 import { getProductos } from "../apis/Productos";
-import {getPaquetes} from "../apis/Paquetes"
 import TimePicker from 'react-time-picker';
 import DatePicker from 'react-date-picker';
 import { registrarVenta } from "../apis/Ventas";
 import ical from "cal-parser";
+const axios = require('axios').default;
+
 
 
 
@@ -158,7 +159,7 @@ export default function HomePane({}){
 
 function parsePaquetes(){
     let arrPaquetes=[];
-    getPaquetes().then(result=>{
+    axios.get("https://strength-club-sprint1.herokuapp.com/paquetes").then(result=>{
         result.data.paquetes.forEach(element=>{
             arrPaquetes.push(
                 { value: element.codigo, label: element.nombre, precio:element.precio}
