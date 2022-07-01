@@ -18,4 +18,4 @@ async function getPaquetes(){
     return await axios.get("https://strength-club-sprint1.herokuapp.com/paquetes");
 }
 
-module.exports={crearPaquete, getPaquetes}
+export {crearPaquete, getPaquetes};

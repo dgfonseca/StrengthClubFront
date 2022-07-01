@@ -26,4 +26,4 @@ async function desagendarSesion(body){
   return await axios.delete("https://strength-club-sprint1.herokuapp.com/sesiones", {data:body})
 }
 
-module.exports={crearSesion,getSesiones,registrarAsistencia,desagendarSesion}
+export {getSesiones,crearSesion,registrarAsistencia,desagendarSesion};

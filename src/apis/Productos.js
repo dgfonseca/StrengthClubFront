@@ -18,4 +18,4 @@ async function getProductos(){
       return await axios.get("https://strength-club-sprint1.herokuapp.com/productos");
 }
 
-module.exports={crearProducto,getProductos}
+export {getProductos, crearProducto};

@@ -20,4 +20,4 @@ async function crearUsuario(body){
       return await axios.post("https://strength-club-sprint1.herokuapp.com/register",body);
 }
 
-module.exports = {loginApi,crearUsuario};
+export {loginApi,crearUsuario};

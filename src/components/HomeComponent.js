@@ -6,10 +6,10 @@ import { Calendar, momentLocalizer } from 'react-big-calendar'
 import moment from "moment";
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import Select from 'react-select'
-import { getClientes } from "../apis/Clientes";
-import {crearSesion,getSesiones,registrarAsistencia,desagendarSesion} from "../apis/Sesiones"
+import  {getClientes} from "../apis/Clientes";
+import  {getSesiones,crearSesion,registrarAsistencia,desagendarSesion} from "../apis/Sesiones"
 import {getEntrenadores} from "../apis/Entrenadores"
-import { getProductos } from "../apis/Productos";
+import {getProductos} from "../apis/Productos";
 import TimePicker from 'react-time-picker';
 import DatePicker from 'react-date-picker';
 import { registrarVenta } from "../apis/Ventas";

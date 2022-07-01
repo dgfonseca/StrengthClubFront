@@ -18,4 +18,4 @@ async function getClientes(){
     return await axios.get("https://strength-club-sprint1.herokuapp.com/clientes");
 }
 
-module.exports={crearCliente,getClientes}
+export {getClientes, crearCliente};

@@ -15,4 +15,4 @@ async function registrarVenta(body){
 }
 
 
-module.exports={registrarVenta}
+export {registrarVenta};

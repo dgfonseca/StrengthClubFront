@@ -18,4 +18,4 @@ async function crearEntrenador(body){
         return await axios.post("https://strength-club-sprint1.herokuapp.com/entrenador",body);
 }
 
-module.exports={crearEntrenador,getEntrenadores}
+export {getEntrenadores,crearEntrenador };

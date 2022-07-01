@@ -1,7 +1,7 @@
 import React,{useState} from "react";
 import { ListGroup,Row,Modal,Button,Form,Alert,Col,Tab, InputGroup, Container } from "react-bootstrap";
 import '../index.css';
-import { getProductos } from "../apis/Productos";
+import  {getProductos}  from "../apis/Productos";
 import Select from 'react-select'
 import { isNaN } from "formik";
 import {crearPaquete} from "../apis/Paquetes"
