@@ -309,10 +309,12 @@ function parseProductos(){
                 setError("No se pudo eliminar la sesion: Verifique que no se haya registrado la asistencia a dicha sesión");
                 setShow2(true)
               }
+              parseSesiones()
         }).catch(error=>{
             setValidated(false);
             setError("No se pudo eliminar la sesion: Verifique la información ingresada");
             setShow2(true)
+            parseSesiones()
           })
           setShow4(false)
           parseSesiones()
@@ -332,14 +334,15 @@ function parseProductos(){
                 setError("No se pudo modificar la sesion: Verifique la información ingresada");
                 setShow2(true)
               }
+              parseSesiones()
           }).catch(error=>{
             setValidated(false);
             setError("No se pudo modificar la sesion: Verifique la información ingresada");
             setShow2(true)
+            parseSesiones()
           })
           setShow4(false)
           setSesion({sesion:{}})
-          parseSesiones()
     };
 
     const handleSubmitRegistrarVenta = ()=>{
@@ -351,6 +354,7 @@ function parseProductos(){
             }).then(response=>{
                 setValidated(false);
               if(response.request.status==200){
+                  setSuccess("Venta registrada correctamente")
                   setShow3(true)
                 }else{
                     setError("No se pudo registrar la venta: Verifique la información ingresada");
@@ -396,7 +400,7 @@ function parseProductos(){
                 cliente:cliente.value,
                 entrenador:entrenador.value,
                 fecha:date,
-                asistio:false
+                asistio:true
               }).then(response=>{
                   setValidated(false);
                 if(response.request.status==200){
@@ -405,15 +409,16 @@ function parseProductos(){
                       setError("No se pudo crear la sesion: Verifique la información ingresada");
                       setShow2(true)
                   }
+                  parseSesiones();
               }).catch(error=>{
                 setValidated(false);
                 setError("No se pudo crear la sesion: Verifique la información ingresada");
                 setShow2(true)
+                parseSesiones();
               })
             handleClose();
         
             }
-            parseSesiones();
         }
       };
 
@@ -533,6 +538,10 @@ function parseProductos(){
                             </Modal.Header>
                             <Modal.Body>
                                 <Form noValidate validated={validated} onSubmit={handleSubmit}>
+                                    <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea2">
+                                        <Form.Label style={{color:"black"}}>Cliente</Form.Label>
+                                        <Select options={clientes} onChange={value=>setCliente(value)}></Select>
+                                    </Form.Group>
                                     <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
                                         <Form.Label style={{color:"black"}}>Producto</Form.Label>
                                         <Select options={productos} onChange={value=>setProductoSeleccionado(value)}></Select>
@@ -597,11 +606,6 @@ function parseProductos(){
                                         </ListGroup>
 
                                     </Form.Group>
-                                        
-                                    <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea2">
-                                        <Form.Label style={{color:"black"}}>Cliente</Form.Label>
-                                        <Select options={clientes} onChange={value=>setCliente(value)}></Select>
-                                    </Form.Group> 
                                     <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea2">
                                         <Form.Label style={{color:"black"}}>Precio</Form.Label>
                                         <InputGroup className="mb-3">

@@ -217,9 +217,9 @@ const handleSubmit = (event) => {
                 </p>
             </Alert>
             <Alert show={show3} variant="success" onClose={() => {setShow3(false);setError("");setValidated(false)}} dismissible>
-                <Alert.Heading>Producto Creado</Alert.Heading>
+                <Alert.Heading>Paquete Creado</Alert.Heading>
                 <p>
-                Producto Creado Exitosamente
+                Paquete Creado Exitosamente
                 </p>
             </Alert>
             <button type="button" onClick={handleShow} style={{margin:"2%",width:"40%"}} className="btn btn-dark">Crear Paquete</button>
