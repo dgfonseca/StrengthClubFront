@@ -7,7 +7,7 @@ import moment from "moment";
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import Select from 'react-select'
 import  {getClientes} from "../apis/Clientes";
-import  {getSesiones,crearSesion,registrarAsistencia,desagendarSesion} from "../apis/Sesiones"
+import  {getSesiones,crearSesion,registrarAsistencia,desagendarSesion, crearSesionIcs} from "../apis/Sesiones"
 import {getEntrenadores} from "../apis/Entrenadores"
 import {getProductos} from "../apis/Productos";
 import TimePicker from 'react-time-picker';
@@ -75,15 +75,14 @@ export default function HomePane({}){
             const json = ical.parseString(e.target.result)
             var now = moment();
             let icsDataSesion=[]
+            let entrenador = json.calendarData['x-wr-calname'];
             json.events.forEach(element => {
                 var input = moment(element.dtstart.value);
                 if((now.isoWeek() == input.isoWeek())&&now.year()==input.year()){
-                    var data = element.description.value.split("-");
-                    var clienteId = data[0];
-                    var entrenadorId = data[1];
+                    var cliente = element.summary;
                     icsDataSesion.push({
-                        cliente:clienteId,
-                        entrenador:entrenadorId,
+                        cliente:cliente.value,
+                        entrenador:entrenador,
                         fecha:element.dtstart.value,
                         descripcion:element.description.value
                     })
@@ -266,7 +265,8 @@ function parseProductos(){
     const handleUploadIcs=async ()=>{
         let arr = []
         icsData.forEach(element => {
-             crearSesion({
+            console.log(element)
+             crearSesionIcs({
                 cliente:element.cliente,
                 entrenador:element.entrenador,
                 fecha:parseDate2(element.fecha),
@@ -282,6 +282,7 @@ function parseProductos(){
                   }
               }).catch(error=>{
                     setValidated(false);
+                    console.log(error)
                     arr.push({
                     descripcion:element.descripcion
                 });

@@ -13,6 +13,9 @@ function authHeader() {
 async function crearSesion(body){
         return await axios.post("https://strength-club-sprint1.herokuapp.com/sesiones",body);
 }
+async function crearSesionIcs(body){
+        return await axios.post("https://strength-club-sprint1.herokuapp.com/sesionesics",body);
+}
 
 async function getSesiones(){
   return await axios.get("https://strength-club-sprint1.herokuapp.com/sesiones");
@@ -26,4 +29,4 @@ async function desagendarSesion(body){
   return await axios.delete("https://strength-club-sprint1.herokuapp.com/sesiones", {data:body})
 }
 
-export {getSesiones,crearSesion,registrarAsistencia,desagendarSesion};
+export {getSesiones,crearSesion,registrarAsistencia,desagendarSesion,crearSesionIcs};
