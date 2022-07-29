@@ -4,6 +4,28 @@
   margin: 0px;
 
 }
+table{
+  border-width:1px; 
+  border-color:#aaaaaa; 
+  border-style:solid; 
+  margin-top: 10px;
+  background-color: #ffffff;
+  width: 40%;
+}
+.itemRow:hover {
+  background-color: gray;
+  border-bottom: #aaaaaa;
+  border-style:solid; 
+  border-width:1px; 
+}
+.itemRow{
+  border-bottom: #aaaaaa;
+  border-style:solid; 
+  border-width:1px; 
+}
+thead{
+  height: 80px;
+}
 
 body {
   background: #ffffff !important;

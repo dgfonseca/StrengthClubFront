@@ -19,8 +19,9 @@ const axios = require('axios').default;
 
 
 
+const localizer = momentLocalizer(moment);
 
-export default function HomePane(){
+export default function CalendarPanel(){
 
  
     const [cliente,setCliente]=useState();
@@ -30,8 +31,10 @@ export default function HomePane(){
 
     const [clientes,setClientes]=useState([]);
     const [entrenadores,setEntrenadores]=useState([]);
+    const [sesiones, setSesiones]=useState(parseSesiones)
     const [productos, setProductos] = useState([]);
     const [paquetes, setPaquetes]= useState([]);
+    const [sesion,setSesion]=useState({sesion:{}});
     const [productosSeleccionados, setProductosSeleccionados] = useState([]);
     const [productoSeleccionado, setProductoSeleccionado] = useState();
     const [paqueteSeleccionado, setPaqueteSeleccionado] = useState();
@@ -49,18 +52,61 @@ export default function HomePane(){
     const [show, setShow]=useState();
     const [show2, setShow2] = useState(false);
     const [show3, setShow3] = useState(false);
+    const [show4, setShow4] = useState(false);
     const[error, setError]=useState();
     const[success, setSuccess]=useState("Sesion Creada/Modificada Exitosamente");
 
+    const[icsData,setIcsData]=useState([]);
+    const[failedEventsIcs, setFailedEventsIcs]=useState([]);
 
+    const [filteredEvents, setFilteredEvents]=useState([])
+    const [searchValue, setSearchValue] = useState('');
+
+    const searchClient = (searchTerm)=> {
+        setSearchValue(searchTerm.target.value.toLowerCase());
+        const search = sesiones.filter(
+            event =>
+                event.title.toLowerCase().indexOf(searchValue) > -1,
+                // console.log(searchValue)
+            
+        );
+        console.log(search)
+        setFilteredEvents(search);
+    }
 
     const handleClose = () => setShow(false);
     const handleCloseVenta = () => {setShowVenta(false);setProductosSeleccionados([]);setPaquetesSeleccionados([]);setCantidad(1);setPrecioCalculado(0)};
+    const handleClose4 = () => setShow4(false);
     const handleShow = () => {setShow(true);parseClientes();parseEntrenadores();}; 
     const handleShowVenta = () => {setShowVenta(true);parseClientes();parseProductos();parsePaquetes();}; 
     const [validated, setValidated] = useState(false);
 
 
+    async function readIcs(e){
+            e.preventDefault()
+            const reader = new FileReader()
+            reader.onload = async (e) => { 
+            const json = ical.parseString(e.target.result)
+            var now = moment();
+            let icsDataSesion=[]
+            let entrenador = json.calendarData['x-wr-calname'];
+            json.events.forEach(element => {
+                var input = moment(element.dtstart.value);
+                if((now.isoWeek() === input.isoWeek())&&now.year()===input.year()){
+                    var cliente = element.summary;
+                    icsDataSesion.push({
+                        cliente:cliente.value,
+                        entrenador:entrenador,
+                        fecha:element.dtstart.value,
+                        descripcion:element.description.value
+                    })
+                    
+                }
+            });
+            setIcsData(icsDataSesion)
+        };
+        reader.readAsText(e.target.files[0])
+    }
     function handleShowProductosCarrito(){
         if(showProductosCarrito){
             setShowProductosCarrito(false);
@@ -119,6 +165,10 @@ export default function HomePane(){
         }]);
         setPrecioCalculado(precioCalculado+(paqueteSeleccionado.precio*cantidad))
     }
+    const handleEventClick = (event)=>{
+        setSesion(event)
+        setShow4(true)
+};
 
 function parsePaquetes(){
     let arrPaquetes=[];
@@ -156,7 +206,47 @@ function parseProductos(){
          return new Date(year,month-1,day,hour,minute);
     }
 
+    function parseDate2(date){
+        date = date.toString().split(" ");
+        let months = {
+            Jan: "01",
+            Feb: "02",
+            Mar: "03",
+            Apr: "04",
+            May: "05",
+            Jun: "06",
+            Jul: "07",
+            Aug: "08",
+            Sep: "09",
+            Oct: "10",
+            Nov: "11",
+            Dec: "12"
+          };
+        let arrHour = date[4].split(":");
+        let year = date[3];
+        let month = months[date[1]];
+        let day = date[2];
+        let hour = arrHour[0];
+        let minute = arrHour[1];
+        return year+"-"+month+"-"+day+" "+hour+":"+minute;
+   }
 
+    function parseSesiones(){
+        let arrSesiones = [];
+        getSesiones().then(result=>{
+            result.data.sesiones.forEach(element=>{
+                arrSesiones.push({
+                    'title': element.nombrecliente,
+                    'allDay': false,
+                    'start': parseDate(element.fecha), 
+                    'end': parseDate(element.fechafin), 
+                    'color': element.color,
+                    'sesion': element
+                  })
+            })
+            setSesiones(arrSesiones);
+        })
+    }
     function parseClientes(){
         getClientes().then(result=>{
             let showClientes = []
@@ -186,7 +276,89 @@ function parseProductos(){
         resolve => setTimeout(resolve, ms)
       );
 
+    const handleUploadIcs=async ()=>{
+        let arr = []
+        icsData.forEach(element => {
+            console.log(element)
+             crearSesionIcs({
+                cliente:element.cliente,
+                entrenador:element.entrenador,
+                fecha:parseDate2(element.fecha),
+                asistio:true
+              }).then(response=>{
+                  setValidated(false);
+                if(response.request.status===200){
+                    setShow3(true)
+                  }else{
+                    arr.push({
+                        descripcion:element.descripcion
+                    });
+                  }
+              }).catch(error=>{
+                    setValidated(false);
+                    console.log(error)
+                    arr.push({
+                    descripcion:element.descripcion
+                });
+              })
+        });
+        await delay(1000);
+        setFailedEventsIcs(arr)
+        if(failedEventsIcs.length!==0){
+            let errors = "Los eventos con la siguiente descripción no se cargaron correctamente:"
+            failedEventsIcs.forEach(element => {
+                errors=errors.concat(" "+element.descripcion+",")
+            });
+            setError(errors);
+            setShow2(true);
+        }
+    }
+    const handleDeleteSesion=()=>{
+        desagendarSesion({
+            id:sesion.sesion.id
+        }).then(response=>{
+            if(response.request.status===200){
+                setSuccess("Sesion desagendada exitosamente")
+                setShow3(true)
+              }else{
+                setError("No se pudo eliminar la sesion: Verifique que no se haya registrado la asistencia a dicha sesión");
+                setShow2(true)
+              }
+              parseSesiones()
+        }).catch(error=>{
+            setValidated(false);
+            setError("No se pudo eliminar la sesion: Verifique la información ingresada");
+            setShow2(true)
+            parseSesiones()
+          })
+          setShow4(false)
+          parseSesiones()
+          setSesion({sesion:{}})
+    }
 
+    const handleModificarSesion=()=>{
+        registrarAsistencia({
+            cliente:sesion.sesion.cliente,
+            entrenador:sesion.sesion.entrenador,
+            fecha:sesion.sesion.fecha,
+            asistio:sesion.asistio
+          }).then(response=>{
+            if(response.request.status===200){
+                setShow3(true)
+              }else{
+                setError("No se pudo modificar la sesion: Verifique la información ingresada");
+                setShow2(true)
+              }
+              parseSesiones()
+          }).catch(error=>{
+            setValidated(false);
+            setError("No se pudo modificar la sesion: Verifique la información ingresada");
+            setShow2(true)
+            parseSesiones()
+          })
+          setShow4(false)
+          setSesion({sesion:{}})
+    };
 
     const handleSubmitRegistrarVenta = ()=>{
         if(cliente&&productosSeleccionados&&paquetesSeleccionados){
@@ -252,10 +424,12 @@ function parseProductos(){
                       setError("No se pudo crear la sesion: Verifique la información ingresada");
                       setShow2(true)
                   }
+                  parseSesiones();
               }).catch(error=>{
                 setValidated(false);
                 setError("No se pudo crear la sesion: Verifique la información ingresada");
                 setShow2(true)
+                parseSesiones();
               })
             handleClose();
         
@@ -266,9 +440,9 @@ function parseProductos(){
 
     return(
             <Container>
-                <Row style={{padding:"1%"}}>
+                <Row style={{padding:"1%",backgroundImage:"linear-gradient(to right, lightgrey, grey,lightgrey)"}}>
                     <Col className="col-sm">
-                        <Alert show={show2} variant="danger" onClose={() => {setShow2(false);setError("");setValidated(false);}} dismissible>
+                        <Alert show={show2} variant="danger" onClose={() => {setShow2(false);setError("");setValidated(false);setFailedEventsIcs([]);}} dismissible>
                             <Alert.Heading>Error</Alert.Heading>
                             <p>
                             {error}
@@ -280,9 +454,68 @@ function parseProductos(){
                             {success}
                             </p>
                         </Alert>
+                        <input
+            value={searchValue}
+            onChange={searchClient}
+            placeholder={"Buscar Cliente"}
+            />
+                        <Calendar
+                        localizer={localizer}
+                        defaultDate={new Date()}
+                        defaultView="day"
+                        events={searchValue?filteredEvents:sesiones}
+                        style={{ height: "100vh" }}
+                        onDoubleClickEvent={event=>handleEventClick(event)}
+                        eventPropGetter={
+                            (event, start, end, isSelected) => {
+                              let newStyle = {
+                                backgroundColor: event.color,
+                              };                        
+                              return {
+                                className: "",
+                                style: newStyle
+                              };
+                            }
+                          }
+                        />
+                        <Modal show={show4} onHide={handleClose4} backdrop="static" keyboard={false}>
+                            <Modal.Header closeButton>
+                                <Modal.Title>Sesion</Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                                <Form noValidate validated={validated} onSubmit={handleSubmit}>
+                                    <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
+                                        <Form.Label style={{color:"black"}}>Descripción:</Form.Label>
+                                        <Form.Text style={{color:"black"}}> El cliente {sesion.sesion.nombrecliente} con cedula {sesion.sesion.cliente} tiene una sesión con el entrenador {sesion.sesion.nombreentrenador} con cedula {sesion.sesion.entrenador}
+                                        </Form.Text>
+                                    </Form.Group>
+                                    <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
+                                        <Form.Label style={{color:"black"}}>Fecha:</Form.Label>
+                                        <Form.Text style={{color:"black"}}> {sesion.sesion.fecha}
+                                        </Form.Text>
+                                    </Form.Group>
+                                    <Form.Group className="mb-3">
+                                        <Form.Label style={{color:"black"}}>Asistió:</Form.Label>
+                                        <Form.Check
+                                        defaultChecked={sesion.sesion.asistio}
+                                        onChange={event=>setSesion({...sesion,asistio:event.target.checked})}
+                                        />
+                                    </Form.Group>    
+                                </Form>
+                            </Modal.Body>
+                            <Modal.Footer>
+                                <Button variant="secondary" onClick={handleClose4}>
+                                    Cerrar
+                                </Button>
+                                <Button variant="danger" onClick={handleDeleteSesion}>
+                                    Borrar
+                                </Button>
+                                <Button variant="primary" onClick={handleModificarSesion}>Modificar</Button>
+                            </Modal.Footer>
+                        </Modal>
                     </Col>
                 </Row>
-                <Row style={{padding:"1%"}}>
+                <Row style={{padding:"1%",backgroundImage:"linear-gradient(to right, lightgrey, grey,lightgrey)"}}>
                     <Col className="col-sm">
                         
                         <button type="button" onClick={handleShow} style={{margin:"2%",width:"40%"}} className="btn btn-dark">Agendar Sesiones</button>
@@ -409,6 +642,15 @@ function parseProductos(){
                                 <Button variant="primary" onClick={handleSubmitRegistrarVenta}>Registrar</Button>
                             </Modal.Footer>
                         </Modal>
+                    </Col>
+                </Row>
+                <Row style={{padding:"1%",backgroundImage:"linear-gradient(to right, lightgrey, grey,lightgrey)"}}>
+                    <Col className="col-sm" >
+                        <Form.Group controlId="formFile" className="mb-3" style={{width:"40%", marginLeft:"30%"}}>
+                            <Form.Label style={{color:"black"}}>Cargar Calendario</Form.Label>
+                            <Form.Control type="file" onChange={(e)=>readIcs(e)}/>
+                        </Form.Group>
+                        <Button variant="dark" onClick={handleUploadIcs}>Cargar Data</Button>
                     </Col>
                 </Row>
             </Container>  

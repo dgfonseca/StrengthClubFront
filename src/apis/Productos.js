@@ -14,8 +14,21 @@ async function crearProducto(body){
         return await axios.post("https://strength-club-sprint1.herokuapp.com/productos",body);
 }
 
+async function actualizarProducto(body){
+  return await axios.put("https://strength-club-sprint1.herokuapp.com/productos",body);
+}
+
+
 async function getProductos(){
       return await axios.get("https://strength-club-sprint1.herokuapp.com/productos");
 }
 
-export {getProductos, crearProducto};
+async function getProductosHabilitados(){
+  return await axios.get("https://strength-club-sprint1.herokuapp.com/productosHabilitados");
+}
+
+async function deleteProductos(body){
+  return await axios.delete("https://strength-club-sprint1.herokuapp.com/productos",{data:body});
+}
+
+export {getProductos, crearProducto,actualizarProducto,getProductosHabilitados,deleteProductos};

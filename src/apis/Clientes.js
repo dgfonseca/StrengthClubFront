@@ -18,4 +18,12 @@ async function getClientes(){
     return await axios.get("https://strength-club-sprint1.herokuapp.com/clientes");
 }
 
-export {getClientes, crearCliente};
+async function actualizarCliente(body){
+  return await axios.put("https://strength-club-sprint1.herokuapp.com/clientes",body);
+}
+
+async function deleteCliente(body){
+  return await axios.delete("https://strength-club-sprint1.herokuapp.com/clientes",{data:body});
+}
+
+export {getClientes, crearCliente,actualizarCliente,deleteCliente};

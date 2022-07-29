@@ -1,11 +1,12 @@
-import React,{useState} from "react";
+import React,{useState,useMemo} from "react";
 import { ListGroup,Row,Modal,Button,Form,Alert,Col,Tab,Sonnet } from "react-bootstrap";
 import '../index.css';
 import {crearUsuario} from "../apis/Users";
+import { useTable, useFilters } from "react-table";
 
 
 
-export default function UsuariosPanel({}){
+export default function UsuariosPanel({data}){
 
 
 const [usuario, setUsuario] = useState();
@@ -37,6 +38,43 @@ const errorMessage = () => {
     </div>
     );
 };
+
+const [filterInput, setFilterInput] = useState("");
+
+const handleFilterChange = e => {
+  const value = e.target.value || undefined;
+  setFilter("nombre", value);
+  setFilterInput(value);
+};
+const columns = useMemo(()=>[
+    {
+    Header: "Usuarios",
+    columns:[
+        {
+            Header: "Usuario",
+            accessor: "usuario"
+        },
+        {
+            Header: "Email",
+            accessor: "email"
+        },
+        {
+            Header: "Rol",
+            accessor: "rol"
+        }
+    ],
+}],[]);
+const {
+    getTableProps, // table props from react-table
+    getTableBodyProps, // table body props from react-table
+    headerGroups, // headerGroups, if your table has groupings
+    rows, // rows for the table based on the data passed
+    prepareRow,
+    setFilter
+  } = useTable({
+    columns,
+    data
+  },useFilters);
 
 const handleSubmit = (event) => {
     const form = event.currentTarget;
@@ -80,30 +118,35 @@ const handleSubmit = (event) => {
 
     return(
         <Row className="justify-content-md-center" style={{margin:"5%"}}>
-            <Tab.Container id="list-group-tabs-example" defaultActiveKey="#link1">
-                <Row>
-                    <Col sm={5}>
-                    <ListGroup>
-                        <ListGroup.Item action href="#link1">
-                        Nicolas Gomez
-                        </ListGroup.Item>
-                        <ListGroup.Item action href="#link2">
-                        Santiago Parra
-                        </ListGroup.Item>
-                    </ListGroup>
-                    </Col>
-                    <Col sm={4}>
-                    <Tab.Content>
-                        <Tab.Pane eventKey="#link1">
-                            <p>Información</p>
-                        </Tab.Pane>
-                        <Tab.Pane eventKey="#link2">
-                            <p>Información</p>
-                        </Tab.Pane>
-                    </Tab.Content>
-                    </Col>
-                </Row>
-            </Tab.Container>
+            <input
+            value={filterInput}
+            onChange={handleFilterChange}
+            placeholder={"Buscar Usuario"}
+            />
+            <table {...getTableProps()}>
+                <thead>
+                    {headerGroups.map(headerGroup => (
+                    <tr {...headerGroup.getHeaderGroupProps()}>
+                        {headerGroup.headers.map(column => (
+                        <th {...column.getHeaderProps()}>{column.render("Header")}</th>
+                        ))}
+                    </tr>
+                    ))}
+                </thead>
+                <tbody {...getTableBodyProps()}>
+                    {
+                    rows.map((row, i) => {
+                    prepareRow(row);
+                    return (
+                        <tr className="itemRow" {...row.getRowProps()}>
+                        {row.cells.map(cell => {
+                            return <td {...cell.getCellProps()}>{cell.render("Cell")}</td>;
+                        })}
+                        </tr>
+                    );
+                    })}
+                </tbody>
+            </table>
             <Modal show={show} onHide={handleClose} backdrop="static" keyboard={false}>
                 <Modal.Header closeButton>
                     <Modal.Title>Crear Cuenta</Modal.Title>

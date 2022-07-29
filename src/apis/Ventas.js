@@ -13,6 +13,18 @@ function authHeader() {
 async function registrarVenta(body){
         return await axios.post("https://strength-club-sprint1.herokuapp.com/ventas",body);
 }
+async function getVentas(){
+  return await axios.get("https://strength-club-sprint1.herokuapp.com/ventas");
+}
+
+async function getContenidoVentas(body){
+  return await axios.post("https://strength-club-sprint1.herokuapp.com/contenidoVentas",body);
+}
 
 
-export {registrarVenta};
+async function borrarVenta(body){
+  return await axios.delete("https://strength-club-sprint1.herokuapp.com/venta",{data:body});
+}
+
+
+export {registrarVenta,getVentas,borrarVenta,getContenidoVentas};

@@ -7,13 +7,14 @@ import AdminPane from './components/adminComponent';
 import HomePane from './components/HomeComponent';
 import { Container,Row,Col, Nav, Navbar } from 'react-bootstrap';
 
+
 function App() {
 
   const [token, setToken] = useState();
 
   return (
     <Router>
-      <div className="App">
+      <div className="App" style={{ backgroundImage: `url("https://i.imgur.com/q3mOt4b.png")`, backgroundRepeat: "no-repeat", backgroundPositionY: "30%", backgroundPositionX: "50%", backgroundSize:"100% 80%"}}>
         <Container fluid style={{margin:"0px", marginRight:"0px"}}>
           <Row>
             <Navbar className="navbar navbar-expand-lg navbar-dark">
