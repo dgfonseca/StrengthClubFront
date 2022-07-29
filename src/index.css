@@ -10,7 +10,6 @@ table{
   border-style:solid; 
   margin-top: 10px;
   background-color: #ffffff;
-  width: 40%;
 }
 .itemRow:hover {
   background-color: gray;

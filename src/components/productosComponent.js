@@ -263,7 +263,7 @@ const handleSubmit = (event) => {
                             <Form.Control.Feedback type="invalid">Ingrese el Precio.</Form.Control.Feedback>
                         </Form.Group> 
                         <Form.Group className="mb-3">
-                                        <Form.Label style={{color:"black"}}>Asistió:</Form.Label>
+                                        <Form.Label style={{color:"black"}}>Habilitado:</Form.Label>
                                         <Form.Check
                                         defaultChecked={habilitado}
                                         onChange={event=>setHabilitado(event.target.checked)}
