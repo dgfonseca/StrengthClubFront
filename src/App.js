@@ -14,7 +14,7 @@ function App() {
 
   return (
     <Router>
-      <div className="App" style={{ backgroundImage: `url("https://i.imgur.com/q3mOt4b.png")`, backgroundRepeat: "no-repeat", backgroundPositionY: "30%", backgroundPositionX: "50%", backgroundSize:"100% 80%"}}>
+      <div className="App" style={{ backgroundImage: `url("https://i.ibb.co/zQ3qGzK/icono-removebg-preview.png")`, backgroundRepeat: "no-repeat", backgroundPositionY: "60%", backgroundPositionX: "50%", backgroundSize:"80% 80%"}}>
         <Container fluid style={{margin:"0px", marginRight:"0px"}}>
           <Row>
             <Navbar className="navbar navbar-expand-lg navbar-dark">

@@ -78,6 +78,10 @@ const columns = useMemo(()=>[
         {
             Header: "Fecha Nacimiento",
             accessor: "fecha_nacimiento"
+        },
+        {
+            Header: "Edad",
+            accessor: "edad"
         }
     ],
 }],[]);

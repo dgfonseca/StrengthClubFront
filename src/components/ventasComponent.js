@@ -133,9 +133,12 @@ const handleSubmit = (event) => {
                 <thead>
                     {headerGroups.map(headerGroup => (
                     <tr {...headerGroup.getHeaderGroupProps()}>
-                        {headerGroup.headers.map(column => (
-                        <th {...column.getHeaderProps()}>{column.render("Header")}</th>
-                        ))}
+                        {headerGroup.headers.map(column => 
+                        {
+                            if(column.Header!=='Id'){
+                                return <th {...column.getHeaderProps()}>{column.render("Header")}</th>
+                            }
+                        })}
                     </tr>
                     ))}
                 </thead>
@@ -146,7 +149,9 @@ const handleSubmit = (event) => {
                     return (
                         <tr className="itemRow" {...row.getRowProps()} onClick={()=> { handleShowDeleteVenta(row);}}>
                         {row.cells.map(cell => {
-                            return <td {...cell.getCellProps()}>{cell.render("Cell")}</td>;
+                            if(cell.column.Header!=='Id'){
+                                return <td {...cell.getCellProps()}>{cell.render("Cell")}</td>;
+                            }
                         })}
                         </tr>
                     );

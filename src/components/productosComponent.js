@@ -127,21 +127,13 @@ const handleSubmit = (event) => {
     setValidated(true);
     if(codigo&&nombre&&descripcion&&inventario&&precio){
         if(buttonName==="Modificar"){
-            console.log({
-                nombre:nombre,
-                codigo:codigo,
-                descripcion:descripcion,
-                inventario:inventario,
-                precio:precio,
-                habilitado:habilitado==null?false:habilitado
-              })
             actualizarProducto({
                 nombre:nombre,
                 codigo:codigo,
                 descripcion:descripcion,
                 inventario:inventario,
                 precio:precio,
-                habilidato:habilitado
+                habilitado:habilitado
               }).then(response=>{
                   setValidated(false);
                 if(response.request.status==200){
