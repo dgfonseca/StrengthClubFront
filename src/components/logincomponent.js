@@ -1,6 +1,5 @@
 import React, {useState} from "react";
 import {loginApi} from "../apis/Users";
-import PropTypes from 'prop-types';
 import '../../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import '../index.css';
 import { useNavigate } from "react-router-dom";
@@ -8,13 +7,16 @@ import { useNavigate } from "react-router-dom";
 
 
 
-export default function Login({ setToken }){
+export default function Login(props){
   const navigate = useNavigate();
   const [username, setUserName] = useState();
   const [password, setPassword] = useState();
   const [error, setError] = useState();
   const [email, setEmail] = useState();
 
+  function handleChange(event) {
+    props.onChange(event);
+}
 
   const errorMessage = () => {
     return (
@@ -31,7 +33,7 @@ export default function Login({ setToken }){
 
   const handleSubmit = async e =>{
     e.preventDefault();
-    if(username=='' || password=='' || email==''){
+    if(username==='' || password==='' || email===''){
       setError("Campos faltantes")
     }else{
       setError('')
@@ -40,14 +42,14 @@ export default function Login({ setToken }){
         email:email,
         password:password
       }).then(response=>{
-      if(response.request.status==200){
-        setToken(response.data);
+      if(response.request.status===200){
+        handleChange(response.data);
         navigate("/home")
       }else{
         setError("Credenciales Invalidas")
         alert("Credenciales Invalidas")
       }
-    }).catch(error=>setError("Credenciales Invalidas"));
+    }).catch(error=>{setError("Credenciales Invalidas")});
     ;
   }
   }
@@ -98,7 +100,4 @@ export default function Login({ setToken }){
     </div>
         );
     
-}
-Login.propTypes = {
-  setToken: PropTypes.func.isRequired
 }

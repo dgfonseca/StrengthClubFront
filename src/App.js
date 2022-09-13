@@ -1,16 +1,22 @@
 import './App.css';
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
 import Login from './components/logincomponent';
 import AdminPane from './components/adminComponent';
 import HomePane from './components/HomeComponent';
-import { Container,Row,Col, Nav, Navbar } from 'react-bootstrap';
+import { Container,Row, Nav, Navbar } from 'react-bootstrap';
+import ContabilidadPane from './components/contabilidadComponent';
 
 
 function App() {
 
-  const [token, setToken] = useState();
+  const [token, setToken] = useState(JSON.parse(localStorage.getItem('token'))?JSON.parse(localStorage.getItem('token')):"");
+  const [role, setRole]=useState(JSON.parse(localStorage.getItem('token'))?JSON.parse(localStorage.getItem('token')).rol:"")
+  const handleChange = useCallback((newValue) => {
+    setToken(newValue);
+    setRole(newValue.rol);
+ },[token,role]);
 
   return (
     <Router>
@@ -21,18 +27,24 @@ function App() {
               <Link className="navbar-brand" to={'/home'}>
                 Strength Club
               </Link>
-              <Nav className="me-auto" variant="dark">
-                <Nav.Link>Sesiones</Nav.Link>
-                <Nav.Link>Productos</Nav.Link>
-                <Nav.Link href='/admin'>Administrador</Nav.Link>
-              </Nav>
+              { token!=="" ?
+                (
+                <Nav className="me-auto" variant="dark">
+                  <Nav.Link href='/admin'>Administrador</Nav.Link>
+                  <Nav.Link href='/contabilidad'>Contabilidad</Nav.Link>
+                </Nav>):(
+                <Nav className="me-auto" variant="dark">
+                  <Nav.Link href='/'>Login</Nav.Link>
+                </Nav>)
+              }
             </Navbar>
           </Row>
           <Row>
             <Routes>
-              <Route path='/home' element={<HomePane></HomePane>}></Route>
-              <Route path="/admin" element={<AdminPane></AdminPane>}/>
-              <Route path="/" element={<Login setToken={setToken}/>} />
+              <Route path='/home' element={(role==='ADMIN' || role==='CAJERO') &&token!==""?(<HomePane value={token}></HomePane>):(<Login value={token} onChange={handleChange}/>)}></Route>
+              <Route path="/admin" element={role==='ADMIN' && token!==""?(<AdminPane value={token}></AdminPane>):(token===""?(<Login value={token} onChange={handleChange}/>):(<HomePane></HomePane>))}/>
+              <Route path="/" element={<Login value={token} onChange={handleChange}/>} />
+              <Route path="/contabilidad" element={role==='ADMIN' && token!==""?(<ContabilidadPane value={token}></ContabilidadPane>):(token===""?(<Login value={token} onChange={handleChange}/>):(<HomePane></HomePane>))} />
             </Routes>
           </Row>
         </Container>

@@ -2,25 +2,22 @@ import React, {useState} from "react";
 import '../../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import { Container,Row,Col } from 'react-bootstrap';
 import { ListGroup,Modal,Button,Form,Alert, InputGroup } from "react-bootstrap";
-import { Calendar, momentLocalizer } from 'react-big-calendar'
-import moment from "moment";
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import Select from 'react-select'
 import  {getClientes} from "../apis/Clientes";
-import  {getSesiones,crearSesion,registrarAsistencia,desagendarSesion, crearSesionIcs} from "../apis/Sesiones"
+import  {crearSesion} from "../apis/Sesiones"
 import {getEntrenadores} from "../apis/Entrenadores"
 import {getProductosHabilitados} from "../apis/Productos";
 import TimePicker from 'react-time-picker';
 import DatePicker from 'react-date-picker';
-import { registrarVenta } from "../apis/Ventas";
-import ical from "cal-parser";
+import { registrarVenta, registrarAbono } from "../apis/Ventas";
 const axios = require('axios').default;
 
 
 
 
 
-export default function HomePane(){
+export default function HomePane(props){
 
  
     const [cliente,setCliente]=useState();
@@ -49,14 +46,19 @@ export default function HomePane(){
     const [show, setShow]=useState();
     const [show2, setShow2] = useState(false);
     const [show3, setShow3] = useState(false);
+    const [show4, setShow4] = useState(false);
+    const [abono,setAbono]= useState(0);
     const[error, setError]=useState();
     const[success, setSuccess]=useState("Sesion Creada/Modificada Exitosamente");
 
 
 
-    const handleClose = () => setShow(false);
+    
+    const handleClose = () => {setShow(false);setAbono(0);setCliente("")}
+    const handleClose4 = () => setShow4(false);
     const handleCloseVenta = () => {setShowVenta(false);setProductosSeleccionados([]);setPaquetesSeleccionados([]);setCantidad(1);setPrecioCalculado(0)};
     const handleShow = () => {setShow(true);parseClientes();parseEntrenadores();}; 
+    const handleShow4 = () =>{setShow4(true);parseClientes()}
     const handleShowVenta = () => {setShowVenta(true);parseClientes();parseProductos();parsePaquetes();}; 
     const [validated, setValidated] = useState(false);
 
@@ -142,21 +144,6 @@ function parseProductos(){
     })
     setProductos(arrProductos);
 }
-    function parseDate(date){
-         date = date.toString().split(" ");
-         let arrHour = date[1];
-         date = date[0];
-         date = date.split("-");
-         let year = date[0];
-         let month = date[1];
-         let day = date[2];
-         arrHour = arrHour.split(":")
-         let hour = arrHour[0];
-         let minute = arrHour[1];
-         return new Date(year,month-1,day,hour,minute);
-    }
-
-
     function parseClientes(){
         getClientes().then(result=>{
             let showClientes = []
@@ -182,18 +169,46 @@ function parseProductos(){
         
     }
 
-    const delay = ms => new Promise(
-        resolve => setTimeout(resolve, ms)
-      );
 
 
+        const handleSubmitAbono = (event)=>{
+            const form = event.currentTarget;
+        if (form.checkValidity() === false) {
+          event.preventDefault();
+          event.stopPropagation();
+          setValidated(true);
+        }else{
+            if(cliente&&abono){
+                registrarAbono({
+                    cliente:cliente.value,
+                    abono:abono
+                }).then(response=>{
+                    setValidated(false);
+                if(response.request.status===200){
+                    console.log("Entroo")
+                    setShow3(true)
+                  }else{
+                      setError("No se pudo registrar el abono: Verifique la información ingresada");
+                      setShow2(true)
+                  }
+                }).catch(error=>{
+                    setValidated(false);
+                    setError(error.response.data.message);
+                    setShow2(true)})
+            }else{
+                setError("No se pudo registrar el abono: Verifique la información ingresada");
+                setShow2(true)
+            }
+        }
+    }
 
     const handleSubmitRegistrarVenta = ()=>{
         if(cliente&&productosSeleccionados&&paquetesSeleccionados){
             registrarVenta({
                 cliente:cliente.value,
                 productos:productosSeleccionados,
-                paquetes:paquetesSeleccionados
+                paquetes:paquetesSeleccionados,
+                valor:precioCalculado
             }).then(response=>{
                 setValidated(false);
               if(response.request.status===200){
@@ -247,8 +262,10 @@ function parseProductos(){
               }).then(response=>{
                   setValidated(false);
                 if(response.request.status===200){
+                    setSuccess("Abono Registrado Exitosamente")
                     setShow3(true)
                   }else{
+                        setSuccess("Abono Registrado Exitosamente")
                       setError("No se pudo crear la sesion: Verifique la información ingresada");
                       setShow2(true)
                   }
@@ -283,8 +300,34 @@ function parseProductos(){
                     </Col>
                 </Row>
                 <Row style={{padding:"1%"}}>
+                <Col className="col-sm">
+                        <button type="button" onClick={handleShow4} style={{margin:"2%",width:"40%"}} className="btn btn-dark">Registrar abono</button>
+                        <Modal show={show4} onHide={handleClose4} backdrop="static" keyboard={false}>
+                            <Modal.Header closeButton>
+                                <Modal.Title>Registrar Abono</Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                                <Form noValidate validated={validated} onSubmit={handleSubmitAbono}>
+                                    <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
+                                        <Form.Label style={{color:"black"}}>Cliente</Form.Label>
+                                        <Select options={clientes} onChange={value=>setCliente(value)}></Select>
+                                    </Form.Group>
+                                    <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea2">
+                                        <Form.Label style={{color:"black"}}>Precio</Form.Label>
+                                        <Form.Control required type="number" placeholder="Inventario" defaultValue={0} onChange={e=>setAbono(e.target.value)}/>
+                                        <Form.Control.Feedback type="invalid">Precio.</Form.Control.Feedback>
+                                    </Form.Group>
+                                </Form>
+                            </Modal.Body>
+                            <Modal.Footer>
+                                <Button variant="secondary" onClick={handleClose4}>
+                                    Cerrar
+                                </Button>
+                                <Button variant="primary" onClick={handleSubmitAbono}>Registrar</Button>
+                            </Modal.Footer>
+                        </Modal>
+                    </Col>
                     <Col className="col-sm">
-                        
                         <button type="button" onClick={handleShow} style={{margin:"2%",width:"40%"}} className="btn btn-dark">Agendar Sesiones</button>
                         <Modal show={show} onHide={handleClose} backdrop="static" keyboard={false}>
                             <Modal.Header closeButton>

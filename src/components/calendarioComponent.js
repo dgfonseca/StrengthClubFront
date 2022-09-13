@@ -67,7 +67,6 @@ export default function CalendarPanel(){
         const search = sesiones.filter(
             event =>
                 event.title.toLowerCase().indexOf(searchValue) > -1,
-                // console.log(searchValue)
             
         );
         console.log(search)
@@ -365,7 +364,8 @@ function parseProductos(){
             registrarVenta({
                 cliente:cliente.value,
                 productos:productosSeleccionados,
-                paquetes:paquetesSeleccionados
+                paquetes:paquetesSeleccionados,
+                valor:precioCalculado
             }).then(response=>{
                 setValidated(false);
               if(response.request.status===200){

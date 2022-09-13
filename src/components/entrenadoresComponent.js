@@ -3,7 +3,8 @@ import {Row,Modal,Button,Form,Alert} from "react-bootstrap";
 import '../index.css';
 import {actualizarEntrenador, crearEntrenador, deleteEntrenador} from "../apis/Entrenadores.js";
 import { SketchPicker } from 'react-color';
-import { useTable, useFilters } from "react-table";
+import { useTable, useFilters, useSortBy } from "react-table";
+
 
 
 
@@ -94,7 +95,7 @@ const {
   } = useTable({
     columns,
     data
-  },useFilters);
+  },useFilters, useSortBy);
 
 
 
@@ -118,7 +119,7 @@ const handleSubmit = (event) => {
                 color:color
               }).then(response=>{
                   setValidated(false);
-                if(response.request.status==200){
+                if(response.request.status===200){
                     setShow3(true)
                   }else{
                       setError("No se pudo crear el entrenador: Verifique la información ingresada");
@@ -139,7 +140,7 @@ const handleSubmit = (event) => {
                 color:color
               }).then(response=>{
                   setValidated(false);
-                if(response.request.status==200){
+                if(response.request.status===200){
                     setShow3(true)
                   }else{
                       setError("No se pudo crear el entrenador: Verifique la información ingresada");
@@ -161,7 +162,7 @@ const handleSubmit = (event) => {
             cedula:cedula
           }).then(response=>{
               setValidated(false);
-            if(response.request.status==200){
+            if(response.request.status===200){
                 setSuccess("borrado")
                 setShow3(true)
               }else{
@@ -189,7 +190,7 @@ const handleSubmit = (event) => {
                     {headerGroups.map(headerGroup => (
                     <tr {...headerGroup.getHeaderGroupProps()}>
                         {headerGroup.headers.map(column => (
-                        <th {...column.getHeaderProps()}>{column.render("Header")}</th>
+                        <th {...column.getHeaderProps(column.getSortByToggleProps())}>{column.render("Header")}</th>
                         ))}
                     </tr>
                     ))}
@@ -201,8 +202,8 @@ const handleSubmit = (event) => {
                     return (
                         <tr className="itemRow" {...row.getRowProps()} onClick={()=> { handleShowUpdateEntrenador(row);}}>
                         {row.cells.map(cell => {
-                            if(cell.column.Header=='Color'){
-                                return <div style={{background:cell.value,height:"20px",width:"20px", marginLeft:"40%", borderRadius:"50%"}}></div>
+                            if(cell.column.Header==='Color'){
+                                return <td><div style={{background:cell.value,height:"20px",width:"20px", marginLeft:"40%", borderRadius:"50%"}}></div></td>
                             }
                             return <td {...cell.getCellProps()}>{cell.render("Cell")}</td>;
                         })}

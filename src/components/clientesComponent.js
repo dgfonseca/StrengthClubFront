@@ -1,8 +1,15 @@
-import React,{useState, useMemo} from "react";
+import React,{useState, useMemo, setState} from "react";
 import { ListGroup,Row,Modal,Button,Form,Alert,Col,Tab } from "react-bootstrap";
 import '../index.css';
-import {crearCliente, actualizarCliente, deleteCliente} from "../apis/Clientes"
-import { useTable, useFilters } from "react-table";
+import {crearCliente, actualizarCliente, deleteCliente, getVentasCliente} from "../apis/Clientes"
+import { useTable, useFilters, useSortBy } from "react-table";
+import Box from '@mui/material/Box';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemText from '@mui/material/ListItemText';
+import { FixedSizeList } from 'react-window';
+import { getContenidoVentas } from "../apis/Ventas";
+
 
 
 export default function ClientesPanel({data}){
@@ -13,6 +20,7 @@ const [email, setEmail] = useState();
 const [cedula, setCedula] = useState();
 const [telefono,setTelefono] = useState();
 const [fechaNacimiento,setFechaNacimiento] = useState();
+const [anticipado, setAnticipado]=useState(true);
 const[error, setError]=useState();
 
 const [show, setShow] = useState(false);
@@ -22,6 +30,9 @@ const [validated, setValidated] = useState(false);
 const [buttonName, setButtonName] = useState("Crear");
 const [success, setSuccess]=useState();
 
+const [ventas,setVentas] = useState([]);
+const [contenidoVenta, setContenidoVenta] = useState([]);
+
 
 const handleClose = () => {
     setDireccion("")
@@ -30,18 +41,27 @@ const handleClose = () => {
     setCedula("")
     setTelefono("")
     setFechaNacimiento("")
+    setContenidoVenta([])
+    setAnticipado(true)
     setShow(false)};
 const handleShow = () => setShow(true);
 
-const handleShowUpdateCliente = e =>{
-        setButtonName("Modificar")
-        setNombre(e.cells[0].value);
-        setCedula(e.cells[1].value)
-        setTelefono(e.cells[2].value)
-        setEmail(e.cells[3].value)
-        setDireccion(e.cells[4].value)
-        setFechaNacimiento(e.cells[5].value)
-        handleShow();
+const handleShowUpdateCliente =  async e =>{
+        setCedula(e.cells[1].value);
+        getVentasCliente({
+            "cliente":e.cells[1].value
+        }).then(result=>{
+            console.log(result.data)
+            setVentas(result.data.ventas)
+            setButtonName("Modificar")
+            setNombre(e.cells[0].value);
+            setTelefono(e.cells[2].value)
+            setEmail(e.cells[3].value)
+            setDireccion(e.cells[4].value)
+            setFechaNacimiento(e.cells[5].value)
+            setAnticipado(e.cells[6].value)
+            handleShow()
+        })
 }
 
 const [filterInput, setFilterInput] = useState("");
@@ -82,6 +102,10 @@ const columns = useMemo(()=>[
         {
             Header: "Edad",
             accessor: "edad"
+        },
+        {
+            Header: "Pago",
+            accessor: "anticipado"
         }
     ],
 }],[]);
@@ -95,7 +119,7 @@ const {
   } = useTable({
     columns,
     data
-  },useFilters);
+  },useFilters, useSortBy);
 
 
 const handleSubmit = (event) => {
@@ -115,7 +139,8 @@ const handleSubmit = (event) => {
                 email:email,
                 telefono:telefono,
                 cedula:cedula,
-                fechaNacimiento:fechaNacimiento
+                fechaNacimiento:fechaNacimiento,
+                anticipado:anticipado
               }).then(response=>{
                   setValidated(false);
                 if(response.request.status==200){
@@ -138,7 +163,8 @@ const handleSubmit = (event) => {
                 email:email,
                 telefono:telefono,
                 cedula:cedula,
-                fechaNacimiento:fechaNacimiento
+                fechaNacimiento:fechaNacimiento,
+                anticipado:anticipado
               }).then(response=>{
                   setValidated(false);
                 if(response.request.status==200){
@@ -182,6 +208,18 @@ const handleSubmit = (event) => {
         handleClose();
 };
 
+function renderRow(props) {
+    const { index, style } = props;
+  
+    return (
+      <ListItem style={style} key={index} component="div" disablePadding>
+        <ListItemButton>
+          <ListItemText primary={`Fecha: ${ventas[index].fecha}, Precio: ${ventas[index].precio}$`} onClick={()=>{getContenidoVentas({id:ventas[index].id}).then(result=>{setContenidoVenta(result.data.contenido)})}} />
+        </ListItemButton>
+      </ListItem>
+    );
+  }
+
     return(
         <Row className="justify-content-md-center" style={{margin:"5%"}}>
             <input
@@ -194,7 +232,7 @@ const handleSubmit = (event) => {
                     {headerGroups.map(headerGroup => (
                     <tr {...headerGroup.getHeaderGroupProps()}>
                         {headerGroup.headers.map(column => (
-                        <th {...column.getHeaderProps()}>{column.render("Header")}</th>
+                        <th {...column.getHeaderProps(column.getSortByToggleProps())}>{column.render("Header")}</th>
                         ))}
                     </tr>
                     ))}
@@ -204,8 +242,17 @@ const handleSubmit = (event) => {
                     rows.map((row, i) => {
                     prepareRow(row);
                     return (
-                        <tr className="itemRow" {...row.getRowProps()} onClick={()=> { handleShowUpdateCliente(row);}}>
+                        <tr className="itemRow" {...row.getRowProps()} onClick={async ()=> {
+                            await handleShowUpdateCliente(row);}}>
                         {row.cells.map(cell => {
+                            if(cell.column.Header=="Pago"){
+                                console.log(cell)
+                                if(cell.value){
+                                    return <td >Anticipado</td>;
+                                }else{
+                                    return <td>Vencido</td>;
+                                }
+                            }
                             return <td {...cell.getCellProps()}>{cell.render("Cell")}</td>;
                         })}
                         </tr>
@@ -224,7 +271,6 @@ const handleSubmit = (event) => {
                             <Form.Control required type="textarea" defaultValue={nombre} placeholder="Nombre" onChange={e=>setNombre(e.target.value)}/>
                             <Form.Control.Feedback type="invalid">Ingrese Nombre.</Form.Control.Feedback>
                         </Form.Group>
-
 
                         <Form.Group className="mb-3" controlId="formBasicEmail">
                             <Form.Label style={{color:"black"}}>Email</Form.Label>
@@ -253,6 +299,43 @@ const handleSubmit = (event) => {
                             <Form.Label style={{color:"black"}}>Fecha Nacimiento</Form.Label>
                             <Form.Control required type="date" defaultValue={fechaNacimiento} placeholder="Fecha" onChange={e=>setFechaNacimiento(e.target.value)}/>
                             <Form.Control.Feedback type="invalid">Ingrese la fecha de nacimiento.</Form.Control.Feedback>
+                        </Form.Group>
+                        <Form.Group className="mb-3">
+                                        <Form.Label style={{color:"black"}}>Anticipado:</Form.Label>
+                                        <Form.Check
+                                        defaultChecked={anticipado}
+                                        onChange={event=>setAnticipado(event.target.checked)}
+                                        />
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Label style={{color:"black"}}>Compras</Form.Label>
+                            <Box
+                                sx={{ width: '100%', height: 200, maxWidth: 400, bgcolor: 'background.paper' }}
+                                >
+                                <FixedSizeList
+                                    height={200}
+                                    width={400}
+                                    itemSize={50}
+                                    itemCount={ventas.length}
+                                    overscanCount={5}
+                                >
+                                    {renderRow}
+                                </FixedSizeList>
+                            </Box>
+                            <Form.Label style={{color:"black"}}>Contenido</Form.Label>
+                            <ListGroup>
+                                {
+                                    contenidoVenta.map((item,index)=>(
+                                        <ListGroup.Item action href={'#' + index}>
+                                            Codigo: {item.codigo}
+                                            <br></br>
+                                            Nombre: {item.nombre}        
+                                            <br></br>
+                                            Cantidad: {item.cantidad}
+                                        </ListGroup.Item>
+                                    ))
+                                }
+                            </ListGroup>
                         </Form.Group> 
                     </Form>
                 </Modal.Body>

@@ -5,7 +5,7 @@ import  {getProductosHabilitados}  from "../apis/Productos";
 import Select from 'react-select'
 import { isNaN } from "formik";
 import {crearPaquete, getProductosPaquete, deletePaquete, actualizarPaquete} from "../apis/Paquetes"
-import { useTable, useFilters } from "react-table";
+import { useTable, useFilters, useSortBy } from "react-table";
 
 
 
@@ -138,7 +138,7 @@ const {
   } = useTable({
     columns,
     data
-  },useFilters);
+  },useFilters, useSortBy);
 
 const handleSubmit = (event) => {
     const form = event.currentTarget;
@@ -240,7 +240,7 @@ const handleSubmit = (event) => {
                     {headerGroups.map(headerGroup => (
                     <tr {...headerGroup.getHeaderGroupProps()}>
                         {headerGroup.headers.map(column => (
-                        <th {...column.getHeaderProps()}>{column.render("Header")}</th>
+                        <th {...column.getHeaderProps(column.getSortByToggleProps())}>{column.render("Header")}</th>
                         ))}
                     </tr>
                     ))}

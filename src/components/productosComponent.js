@@ -1,8 +1,8 @@
 import React,{useState, useMemo} from "react";
-import { ListGroup,Row,Modal,Button,Form,Alert,Col,Tab, InputGroup } from "react-bootstrap";
+import { Row,Modal,Button,Form,Alert, InputGroup } from "react-bootstrap";
 import '../index.css';
-import {crearProducto,actualizarProducto,borrarProducto, deleteProductos} from "../apis/Productos";
-import { useTable, useFilters } from "react-table";
+import {crearProducto,actualizarProducto,deleteProductos} from "../apis/Productos";
+import { useTable, useFilters, useSortBy } from "react-table";
 
 
 
@@ -13,10 +13,13 @@ const [nombre, setNombre] = useState();
 const [codigo, setCodigo] = useState();
 const [descripcion, setDescripcion] = useState();
 const [inventario, setInventario] = useState();
+const [inventarioAdicional, setInventarioAdicional] = useState();
 const [precio,setPrecio] = useState();
+const [precioCompra,setPrecioCompra] = useState();
 const[error, setError]=useState();
 const [success, setSuccess]=useState();
 const [habilitado, setHabilitado]=useState(true);
+const [correccion, setCorreccion]=useState(false);
 
 const [show, setShow] = useState(false);
 const [show2, setShow2] = useState(false);
@@ -26,11 +29,14 @@ const [buttonName,setButtonName]=useState("Crear");
 
 const handleClose = () => {
     setShow(false)
+    setCorreccion(false)
     setNombre("")
     setCodigo("")
     setDescripcion("")
     setInventario("")
     setPrecio("")
+    setPrecioCompra("")
+    setInventarioAdicional("")
 };
 const handleShow = () => {setShow(true)};
 
@@ -41,7 +47,8 @@ const handleShowUpdateProducto = e =>{
         setDescripcion(e.cells[2].value)
         setInventario(e.cells[3].value)
         setPrecio(e.cells[4].value)
-        setHabilitado(e.cells[5].value)
+        setPrecioCompra(e.cells[5].value)
+        setHabilitado(e.cells[6].value)
         handleShow();
 }
 
@@ -77,6 +84,10 @@ const columns = useMemo(()=>[
             accessor: "precio"
         },
         {
+            Header: "Precio Compra",
+            accessor: "preciocompra"
+        },
+        {
             Header: "Habilitado",
             accessor: "habilitado"
         }
@@ -92,7 +103,7 @@ const {
   } = useTable({
     columns,
     data
-  },useFilters);
+  },useFilters, useSortBy);
 
 const handleDelete = () => {
     if(codigo){
@@ -100,7 +111,7 @@ const handleDelete = () => {
             codigo:codigo
           }).then(response=>{
               setValidated(false);
-            if(response.request.status==200){
+            if(response.request.status===200){
                 setSuccess("borrado")
                 setShow3(true)
               }else{
@@ -132,11 +143,14 @@ const handleSubmit = (event) => {
                 codigo:codigo,
                 descripcion:descripcion,
                 inventario:inventario,
+                inventarioAdicional:inventarioAdicional,
                 precio:precio,
-                habilitado:habilitado
+                habilitado:habilitado,
+                precioCompra:precioCompra,
+                correccion:correccion
               }).then(response=>{
                   setValidated(false);
-                if(response.request.status==200){
+                if(response.request.status===200){
                     setSuccess("actualizado")
                     setShow3(true)
                   }else{
@@ -144,6 +158,7 @@ const handleSubmit = (event) => {
                       setShow2(true)
                   }
               }).catch(error=>{
+                console.log(error)
                 setValidated(false);
                 setError("No se pudo actualizar el producto: Verifique la información ingresada");
                 setShow2(true)
@@ -155,10 +170,11 @@ const handleSubmit = (event) => {
                 descripcion:descripcion,
                 inventario:inventario,
                 precio:precio,
+                precioCompra:precioCompra,
                 habilitado:habilitado
               }).then(response=>{
                   setValidated(false);
-                if(response.request.status==200){
+                if(response.request.status===200){
                     setSuccess("creado")
                     setShow3(true)
                   }else{
@@ -188,7 +204,7 @@ const handleSubmit = (event) => {
                     {headerGroups.map(headerGroup => (
                     <tr {...headerGroup.getHeaderGroupProps()}>
                         {headerGroup.headers.map(column => (
-                        <th {...column.getHeaderProps()}>{column.render("Header")}</th>
+                        <th {...column.getHeaderProps(column.getSortByToggleProps())}>{column.render("Header")}</th>
                         ))}
                     </tr>
                     ))}
@@ -200,11 +216,11 @@ const handleSubmit = (event) => {
                     return (
                         <tr className="itemRow" {...row.getRowProps()} onClick={()=> { handleShowUpdateProducto(row);}}>
                         {row.cells.map(cell => {
-                            if(cell.column.Header=='Habilitado'){
+                            if(cell.column.Header==='Habilitado'){
                                 if(cell.value){
-                                    return <div style={{background:"green",height:"20px",width:"20px", marginLeft:"40%", borderRadius:"50%"}}></div>
+                                    return <td><div style={{background:"green",height:"20px",width:"20px", marginLeft:"40%", borderRadius:"50%"}}></div></td>
                                 }else{
-                                    return <div style={{background:"red",height:"20px",width:"20px", marginLeft:"40%", borderRadius:"50%"}}></div>
+                                    return <td><div style={{background:"red",height:"20px",width:"20px", marginLeft:"40%", borderRadius:"50%"}}></div></td>
                                 }
                             }else{
                                 return <td {...cell.getCellProps()}>{cell.render("Cell")}</td>;
@@ -239,7 +255,15 @@ const handleSubmit = (event) => {
                             <Form.Control required type="textarea" placeholder="Descripcion" defaultValue={descripcion} onChange={e=>setDescripcion(e.target.value)}/>
                             <Form.Control.Feedback type="invalid">Ingrese la Descripcion.</Form.Control.Feedback>
                         </Form.Group>
-
+                        {
+                            buttonName==='Modificar' ? 
+                            <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea2">
+                                <Form.Label style={{color:"black"}}>Inventario Adicional</Form.Label>
+                                <Form.Control required type="number" placeholder="Inventario" defaultValue={0} onChange={e=>setInventarioAdicional(e.target.value)}/>
+                                <Form.Control.Feedback type="invalid">Ingrese el Inventario adicional.</Form.Control.Feedback>
+                            </Form.Group>
+                            : null
+                        }
                         <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea2">
                             <Form.Label style={{color:"black"}}>Inventario</Form.Label>
                             <Form.Control required type="number" placeholder="Inventario" defaultValue={inventario} onChange={e=>setInventario(e.target.value)}/>
@@ -253,14 +277,29 @@ const handleSubmit = (event) => {
                                 <Form.Control aria-label="Precio" required type="number" defaultValue={precio} placeholder="Precio" onChange={e=>setPrecio(e.target.value)}/>
                             </InputGroup>
                             <Form.Control.Feedback type="invalid">Ingrese el Precio.</Form.Control.Feedback>
-                        </Form.Group> 
+                        </Form.Group>
+                        <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea2">
+                            <Form.Label style={{color:"black"}}>Precio Compra</Form.Label>
+                            <InputGroup className="mb-3">
+                                <InputGroup.Text>$</InputGroup.Text>
+                                <Form.Control aria-label="Precio" required type="number" defaultValue={precioCompra} placeholder="Precio Compra" onChange={e=>setPrecioCompra(e.target.value)}/>
+                            </InputGroup>
+                            <Form.Control.Feedback type="invalid">Ingrese el Precio de Compra.</Form.Control.Feedback>
+                        </Form.Group>  
                         <Form.Group className="mb-3">
                                         <Form.Label style={{color:"black"}}>Habilitado:</Form.Label>
                                         <Form.Check
                                         defaultChecked={habilitado}
                                         onChange={event=>setHabilitado(event.target.checked)}
                                         />
-                        </Form.Group>    
+                        </Form.Group>
+                        <Form.Group className="mb-3">
+                                        <Form.Label style={{color:"black"}}>Corrección:</Form.Label>
+                                        <Form.Check
+                                        defaultChecked={correccion}
+                                        onChange={event=>setCorreccion(event.target.checked)}
+                                        />
+                        </Form.Group>     
                     </Form>
                 </Modal.Body>
                 <Modal.Footer>

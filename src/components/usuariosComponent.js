@@ -2,12 +2,9 @@ import React,{useState,useMemo} from "react";
 import { ListGroup,Row,Modal,Button,Form,Alert,Col,Tab,Sonnet } from "react-bootstrap";
 import '../index.css';
 import {crearUsuario} from "../apis/Users";
-import { useTable, useFilters } from "react-table";
-
-
+import { useTable, useFilters, useSortBy } from "react-table";
 
 export default function UsuariosPanel({data}){
-
 
 const [usuario, setUsuario] = useState();
 const [nombre, setNombre] = useState();
@@ -74,7 +71,7 @@ const {
   } = useTable({
     columns,
     data
-  },useFilters);
+  },useFilters,useSortBy);
 
 const handleSubmit = (event) => {
     const form = event.currentTarget;
@@ -112,10 +109,7 @@ const handleSubmit = (event) => {
           })
         handleClose();
     }
-
-
   };
-
     return(
         <Row className="justify-content-md-center" style={{margin:"5%"}}>
             <input
@@ -128,7 +122,7 @@ const handleSubmit = (event) => {
                     {headerGroups.map(headerGroup => (
                     <tr {...headerGroup.getHeaderGroupProps()}>
                         {headerGroup.headers.map(column => (
-                        <th {...column.getHeaderProps()}>{column.render("Header")}</th>
+                        <th {...column.getHeaderProps(column.getSortByToggleProps())}>{column.render("Header")}</th>
                         ))}
                     </tr>
                     ))}

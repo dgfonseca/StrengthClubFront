@@ -17,7 +17,7 @@ import CalendarPanel from "./calendarioComponent";
 
 
 
-export default function AdminPane({}){
+export default function AdminPane(props){
 
     const [show, setShow]=useState();
     const [entrenadores,setEntrenadores]=useState([]);
@@ -64,25 +64,23 @@ export default function AdminPane({}){
     }
 
     const handleShowCalendario = async ()=>{
-        // const ent = await getVentas()
-        // setVentas(ent.data.ventas)
         setShow("Calendario");
     }
 
     function panel(){
         if(show==="Entrenadores"){
             return <EntrenadoresPanel data={entrenadores}></EntrenadoresPanel>
-        }else if(show=="Usuarios"){
+        }else if(show==="Usuarios"){
             return<UsuariosPanel data={usuarios}></UsuariosPanel>
-        }else if(show=="Clientes"){
+        }else if(show==="Clientes"){
             return<ClientesPanel data={clientes}></ClientesPanel>
-        }else if(show=="Productos"){
+        }else if(show==="Productos"){
             return <ProductosPanel data={productos}></ProductosPanel>
-        }else if(show=="Paquetes"){
+        }else if(show==="Paquetes"){
             return <PaquetesPanel data={paquetes}></PaquetesPanel>
-        }else if(show=="Ventas"){
+        }else if(show==="Ventas"){
             return <VentasPanel data={ventas}></VentasPanel>
-        }else if(show=="Calendario"){
+        }else if(show==="Calendario"){
             return <CalendarPanel></CalendarPanel>
         }
     }

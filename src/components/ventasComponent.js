@@ -1,7 +1,7 @@
 import React,{useState, useMemo} from "react";
 import { Row,Modal,Button,Form,Alert,ListGroup} from "react-bootstrap";
 import '../index.css';
-import { useTable, useFilters } from "react-table";
+import { useTable, useFilters, useSortBy } from "react-table";
 import { borrarVenta, getContenidoVentas } from "../apis/Ventas";
 
 
@@ -68,7 +68,7 @@ const columns = useMemo(()=>[
         },
         {
             Header: "Cedula",
-            accessor: "cliente"
+            accessor: "cedula"
         },
         {
             Header: "Nombre",
@@ -80,7 +80,7 @@ const columns = useMemo(()=>[
         },
         {
             Header: "Precio",
-            accessor: "precio"
+            accessor: "valor"
         }
     ],
 }],[]);
@@ -95,7 +95,7 @@ const {
   } = useTable({
     columns,
     data
-  },useFilters);
+  },useFilters, useSortBy);
 
 
 
@@ -136,7 +136,7 @@ const handleSubmit = (event) => {
                         {headerGroup.headers.map(column => 
                         {
                             if(column.Header!=='Id'){
-                                return <th {...column.getHeaderProps()}>{column.render("Header")}</th>
+                                return <th {...column.getHeaderProps(column.getSortByToggleProps())}>{column.render("Header")}</th>
                             }
                         })}
                     </tr>
