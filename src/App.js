@@ -11,8 +11,8 @@ import ContabilidadPane from './components/contabilidadComponent';
 
 function App() {
 
-  const [token, setToken] = useState(JSON.parse(localStorage.getItem('token'))?JSON.parse(localStorage.getItem('token')):"");
-  const [role, setRole]=useState(JSON.parse(localStorage.getItem('token'))?JSON.parse(localStorage.getItem('token')).rol:"")
+  const [token, setToken] = useState(localStorage.getItem('token')?JSON.parse(localStorage.getItem('token')):"");
+  const [role, setRole]=useState(localStorage.getItem('token')?JSON.parse(localStorage.getItem('token')).rol:"")
   const handleChange = useCallback((newValue) => {
     setToken(newValue);
     setRole(newValue.rol);
