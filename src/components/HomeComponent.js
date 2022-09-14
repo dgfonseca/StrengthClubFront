@@ -11,7 +11,7 @@ import {getProductosHabilitados} from "../apis/Productos";
 import TimePicker from 'react-time-picker';
 import DatePicker from 'react-date-picker';
 import { registrarVenta, registrarAbono } from "../apis/Ventas";
-const axios = require('axios').default;
+import { getPaquetes } from "../apis/Paquetes";
 
 
 
@@ -103,12 +103,14 @@ export default function HomePane(props){
         }
     }
     function agregarProducto(){
+        console.log(productoSeleccionado.precio)
         setProductosSeleccionados([...productosSeleccionados,{
             nombre:productoSeleccionado.label,
             codigo:productoSeleccionado.value,
             precio:productoSeleccionado.precio,
             cantidad:cantidad
         }]);
+        console.log(productoSeleccionado.precio)
         setPrecioCalculado(precioCalculado+(productoSeleccionado.precio*cantidad))
     }
 
@@ -124,7 +126,7 @@ export default function HomePane(props){
 
 function parsePaquetes(){
     let arrPaquetes=[];
-    axios.get("https://strength-club-sprint1.herokuapp.com/paquetes").then(result=>{
+    getPaquetes.then(result=>{
         result.data.paquetes.forEach(element=>{
             arrPaquetes.push(
                 { value: element.codigo, label: element.nombre, precio:element.precio}
@@ -168,8 +170,6 @@ function parseProductos(){
         });
         
     }
-
-
 
         const handleSubmitAbono = (event)=>{
             const form = event.currentTarget;

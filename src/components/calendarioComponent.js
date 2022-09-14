@@ -13,8 +13,8 @@ import {getProductosHabilitados} from "../apis/Productos";
 import TimePicker from 'react-time-picker';
 import DatePicker from 'react-date-picker';
 import { registrarVenta } from "../apis/Ventas";
+import {getPaquetes} from "../apis/Paquetes"
 import ical from "cal-parser";
-const axios = require('axios').default;
 
 
 
@@ -165,13 +165,14 @@ export default function CalendarPanel(){
         setPrecioCalculado(precioCalculado+(paqueteSeleccionado.precio*cantidad))
     }
     const handleEventClick = (event)=>{
-        setSesion(event)
+        console.log(event.sesion)
+        setSesion(event.sesion)
         setShow4(true)
 };
 
 function parsePaquetes(){
     let arrPaquetes=[];
-    axios.get("https://strength-club-sprint1.herokuapp.com/paquetes").then(result=>{
+    getPaquetes.then(result=>{
         result.data.paquetes.forEach(element=>{
             arrPaquetes.push(
                 { value: element.codigo, label: element.nombre, precio:element.precio}
@@ -336,11 +337,13 @@ function parseProductos(){
     }
 
     const handleModificarSesion=()=>{
+        console.log(sesion)
         registrarAsistencia({
-            cliente:sesion.sesion.cliente,
-            entrenador:sesion.sesion.entrenador,
-            fecha:sesion.sesion.fecha,
-            asistio:sesion.asistio
+            cliente:sesion.cliente,
+            entrenador:sesion.entrenador,
+            fecha:sesion.fecha,
+            asistio:sesion.asistio,
+            virtual:sesion.virtual
           }).then(response=>{
             if(response.request.status===200){
                 setShow3(true)
@@ -486,19 +489,26 @@ function parseProductos(){
                                 <Form noValidate validated={validated} onSubmit={handleSubmit}>
                                     <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
                                         <Form.Label style={{color:"black"}}>Descripción:</Form.Label>
-                                        <Form.Text style={{color:"black"}}> El cliente {sesion.sesion.nombrecliente} con cedula {sesion.sesion.cliente} tiene una sesión con el entrenador {sesion.sesion.nombreentrenador} con cedula {sesion.sesion.entrenador}
+                                        <Form.Text style={{color:"black"}}> El cliente {sesion.nombrecliente} con cedula {sesion.cliente} tiene una sesión con el entrenador {sesion.nombreentrenador} con cedula {sesion.entrenador}
                                         </Form.Text>
                                     </Form.Group>
                                     <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
                                         <Form.Label style={{color:"black"}}>Fecha:</Form.Label>
-                                        <Form.Text style={{color:"black"}}> {sesion.sesion.fecha}
+                                        <Form.Text style={{color:"black"}}> {sesion.fecha}
                                         </Form.Text>
                                     </Form.Group>
                                     <Form.Group className="mb-3">
                                         <Form.Label style={{color:"black"}}>Asistió:</Form.Label>
                                         <Form.Check
-                                        defaultChecked={sesion.sesion.asistio}
-                                        onChange={event=>setSesion({...sesion,asistio:event.target.checked})}
+                                        defaultChecked={sesion.asistio}
+                                        onChange={event=>{setSesion({...sesion,asistio:event.target.checked});console.log(event.target.checked)}}
+                                        />
+                                    </Form.Group>    
+                                    <Form.Group className="mb-3">
+                                        <Form.Label style={{color:"black"}}>Virtual:</Form.Label>
+                                        <Form.Check
+                                        defaultChecked={sesion.virtual}
+                                        onChange={event=>setSesion({...sesion,virtual:event.target.checked})}
                                         />
                                     </Form.Group>    
                                 </Form>
