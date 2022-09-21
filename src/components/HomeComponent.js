@@ -55,7 +55,7 @@ export default function HomePane(props){
 
     
     const handleClose = () => {setShow(false);setAbono(0);setCliente("")}
-    const handleClose4 = () => setShow4(false);
+    const handleClose4 = () => {setShow4(false);setCliente("");setAbono(0)}
     const handleCloseVenta = () => {setShowVenta(false);setProductosSeleccionados([]);setPaquetesSeleccionados([]);setCantidad(1);setPrecioCalculado(0)};
     const handleShow = () => {setShow(true);parseClientes();parseEntrenadores();}; 
     const handleShow4 = () =>{setShow4(true);parseClientes()}
@@ -103,14 +103,12 @@ export default function HomePane(props){
         }
     }
     function agregarProducto(){
-        console.log(productoSeleccionado.precio)
         setProductosSeleccionados([...productosSeleccionados,{
             nombre:productoSeleccionado.label,
             codigo:productoSeleccionado.value,
             precio:productoSeleccionado.precio,
             cantidad:cantidad
         }]);
-        console.log(productoSeleccionado.precio)
         setPrecioCalculado(precioCalculado+(productoSeleccionado.precio*cantidad))
     }
 
@@ -185,7 +183,7 @@ function parseProductos(){
                 }).then(response=>{
                     setValidated(false);
                 if(response.request.status===200){
-                    console.log("Entroo")
+                    setSuccess("Abono registrado exitosamente")
                     setShow3(true)
                   }else{
                       setError("No se pudo registrar el abono: Verifique la información ingresada");
@@ -200,6 +198,7 @@ function parseProductos(){
                 setShow2(true)
             }
         }
+        handleClose4()
     }
 
     const handleSubmitRegistrarVenta = ()=>{
@@ -314,7 +313,7 @@ function parseProductos(){
                                     </Form.Group>
                                     <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea2">
                                         <Form.Label style={{color:"black"}}>Precio</Form.Label>
-                                        <Form.Control required type="number" placeholder="Inventario" defaultValue={0} onChange={e=>setAbono(e.target.value)}/>
+                                        <Form.Control required type="number" placeholder="Precio" defaultValue={0} onChange={e=>setAbono(e.target.value)}/>
                                         <Form.Control.Feedback type="invalid">Precio.</Form.Control.Feedback>
                                     </Form.Group>
                                 </Form>

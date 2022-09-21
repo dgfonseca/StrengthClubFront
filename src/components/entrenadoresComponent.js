@@ -4,14 +4,10 @@ import '../index.css';
 import {actualizarEntrenador, crearEntrenador, deleteEntrenador} from "../apis/Entrenadores.js";
 import { SketchPicker } from 'react-color';
 import { useTable, useFilters, useSortBy } from "react-table";
-
-
-
-
-
+import { useNavigate } from "react-router-dom";
 
 export default function EntrenadoresPanel({data}){
-
+const navigate = useNavigate();
 const [filterInput, setFilterInput] = useState("");
 
 const handleFilterChange = e => {
@@ -97,8 +93,6 @@ const {
     data
   },useFilters, useSortBy);
 
-
-
 const handleSubmit = (event) => {
     const form = event.currentTarget;
     if (form.checkValidity() === false) {
@@ -126,9 +120,14 @@ const handleSubmit = (event) => {
                       setShow2(true)
                   }
               }).catch(error=>{
-                setValidated(false);
-                setError("No se pudo crear el entrenador: Verifique la información ingresada");
-                setShow2(true)
+                if(error.response.status===401){
+                    localStorage.removeItem("token")
+                   navigate("/")
+                }else{
+                    setValidated(false);
+                    setError("No se pudo crear el entrenador: Verifique la información ingresada");
+                    setShow2(true)
+                }
               })
         }else{
             crearEntrenador({
@@ -147,9 +146,15 @@ const handleSubmit = (event) => {
                       setShow2(true)
                   }
               }).catch(error=>{
-                setValidated(false);
-                setError("No se pudo crear el entrenador: Verifique la información ingresada");
-                setShow2(true)
+                if(error.response.status===401){
+                    localStorage.removeItem("token")
+                   navigate("/")
+                }
+                else{
+                    setValidated(false);
+                    setError("No se pudo crear el entrenador: Verifique la información ingresada");
+                    setShow2(true)
+                }
               })
         }
         handleClose();
@@ -170,9 +175,15 @@ const handleSubmit = (event) => {
                   setShow2(true)
               }
           }).catch(error=>{
-            setValidated(false);
-            setError("No se pudo borrar el entrenador: Verifique que no esté asociado a ninguna sesion");
-            setShow2(true)
+            if(error.response.status===401){
+                localStorage.removeItem("token")
+               navigate("/")
+            }
+            else{
+                setValidated(false);
+                setError("No se pudo borrar el entrenador: Verifique que no esté asociado a ninguna sesion");
+                setShow2(true)
+            }
           })
         }
         handleClose();

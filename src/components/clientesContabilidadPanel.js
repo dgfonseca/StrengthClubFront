@@ -5,13 +5,14 @@ import { Row,Col,Form,Modal, Alert } from 'react-bootstrap';
 import Button from '@mui/material/Button';
 import SendIcon from '@mui/icons-material/Send';
 import { getContabilidadClientes, notificarClienteCorreo,notificarClientesCorreo } from "../apis/Clientes";
+import { useNavigate } from "react-router-dom";
 
 
 
 
 
 export default function ClientesContabilidadPanel({data2}){
-
+const navigate = useNavigate();
 const [fechaInicio, setFechaInicio]=useState("");
 const [fechaFin, setFechaFin]=useState("");
 const [cliente,setCliente]=useState("")
@@ -28,7 +29,6 @@ const handleClose = ()=>setShow(false);
 const filtrarClientes = ()=>{
     if(fechaFin&&fechaInicio){
         getContabilidadClientes({fechaInicio:fechaInicio,fechaFin:fechaFin}).then(response=>{
-            console.log(response)
             if(response.request.status===200){
                 setData(response.data.clientes)
               }else{
@@ -36,9 +36,13 @@ const filtrarClientes = ()=>{
                   setShow2(true)
               }
           }).catch(error=>{
-            console.log(error)
-            setError("No se pudo filtrar los clientes por fecha");
-            setShow2(true)
+            if(error.response.status===401){
+                localStorage.removeItem("token")
+               navigate("/")
+            }else{
+                setError("No se pudo filtrar los clientes por fecha");
+                setShow2(true)
+            }
           })
     }else{
         setError("Elegir una fecha inicio y una fecha fin valida");
@@ -55,9 +59,13 @@ const handleSubmit = ()=>{
                   setShow2(true)
               }
           }).catch(error=>{
-            console.log(error)
-            setError("No se pudo Notificar el cliente");
-            setShow2(true)
+            if(error.response.status===401){
+                localStorage.removeItem("token")
+               navigate("/")
+            }else{
+                setError("No se pudo Notificar el cliente");
+                setShow2(true)
+            }
           })
     }else{
         notificarClientesCorreo().then(response=>{
@@ -68,12 +76,15 @@ const handleSubmit = ()=>{
                   setShow2(true)
               }
           }).catch(error=>{
-            console.log(error)
-            setError("No se pudo Notificar los clientes");
-            setShow2(true)
+            if(error.response.status===401){
+                localStorage.removeItem("token")
+               navigate("/")
+            }else{
+                setError("No se pudo Notificar los clientes");
+                setShow2(true)
+            }
           })
     }
-    
     setShow(false)
 };
 const [filterInput, setFilterInput] = useState("");

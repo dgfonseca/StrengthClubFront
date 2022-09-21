@@ -14,11 +14,13 @@ import { getUsuarios } from "../apis/Users";
 import { getPaquetes } from "../apis/Paquetes";
 import { getVentas } from "../apis/Ventas";
 import CalendarPanel from "./calendarioComponent";
+import { useNavigate } from "react-router-dom";
+
 
 
 
 export default function AdminPane(props){
-
+    const navigate = useNavigate();
     const [show, setShow]=useState();
     const [entrenadores,setEntrenadores]=useState([]);
     const [productos, setProductos]=useState([]);
@@ -28,39 +30,69 @@ export default function AdminPane(props){
     const [ventas, setVentas]=useState([]);
 
     const handleShowEntrenadores = async ()=>{
-        const ent = await getEntrenadores()
-        setEntrenadores(ent.data.entrenadores)
-        setShow("Entrenadores");
+        try {
+            const ent = await getEntrenadores()
+            setEntrenadores(ent.data.entrenadores)
+            setShow("Entrenadores");
+        } catch (error) {
+            localStorage.removeItem("token")
+            navigate("/")
+        }
     }
 
     const handleShowUsuarios = async ()=>{
-        const ent = await getUsuarios()
-        setUsuarios(ent.data.usuarios)
-        setShow("Usuarios");
+        try {
+            const ent = await getUsuarios()
+            setUsuarios(ent.data.usuarios)
+            setShow("Usuarios");
+        } catch (error) {
+            localStorage.removeItem("token")
+            navigate("/")
+        }
     }
 
     const handleShowProductos = async ()=>{
-        const ent = await getProductos()
-        setProductos(ent.data.productos)
-        setShow("Productos");
+        try {
+            const ent = await getProductos()
+            setProductos(ent.data.productos)
+            setShow("Productos");
+        } catch (error) {
+            localStorage.removeItem("token")
+            navigate("/")
+        }
     }
 
     const handleShowPaquetes = async ()=>{
-        const ent = await getPaquetes()
-        setPaquetes(ent.data.paquetes)
-        setShow("Paquetes");
+        try {
+            const ent = await getPaquetes()
+            setPaquetes(ent.data.paquetes)
+            setShow("Paquetes");
+        } catch (error) {
+            localStorage.removeItem("token")
+            navigate("/")
+        }
     }
 
     const handleShowClientes = async ()=>{
-        const ent = await getClientes()
-        setClientes(ent.data.clientes)
-        setShow("Clientes");
+        try {
+            const ent = await getClientes()
+            setClientes(ent.data.clientes)
+            setShow("Clientes");
+        } catch (error) {
+            localStorage.removeItem("token")
+            navigate("/")
+        }
     }
 
     const handleShowVentas = async ()=>{
-        const ent = await getVentas()
-        setVentas(ent.data.ventas)
-        setShow("Ventas");
+        try {
+            const ent = await getVentas()
+            setVentas(ent.data.ventas)
+            setShow("Ventas");
+        } catch (error) {
+            localStorage.removeItem("token")
+            navigate("/")
+        }
     }
 
     const handleShowCalendario = async ()=>{

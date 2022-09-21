@@ -9,11 +9,13 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import { FixedSizeList } from 'react-window';
 import { getContenidoVentas } from "../apis/Ventas";
+import { useNavigate } from "react-router-dom";
+
 
 
 
 export default function ClientesPanel({data}){
-
+const navigate = useNavigate();
 const [direccion, setDireccion] = useState();
 const [nombre, setNombre] = useState();
 const [email, setEmail] = useState();
@@ -51,7 +53,6 @@ const handleShowUpdateCliente =  async e =>{
         getVentasCliente({
             "cliente":e.cells[1].value
         }).then(result=>{
-            console.log(result.data)
             setVentas(result.data.ventas)
             setButtonName("Modificar")
             setNombre(e.cells[0].value);
@@ -61,6 +62,11 @@ const handleShowUpdateCliente =  async e =>{
             setFechaNacimiento(e.cells[5].value)
             setAnticipado(e.cells[6].value)
             handleShow()
+        }).catch(error=>{
+            if(error.response.status===401){
+                localStorage.removeItem("token")
+               navigate("/")
+            }
         })
 }
 
@@ -151,10 +157,14 @@ const handleSubmit = (event) => {
                       setShow2(true)
                   }
               }).catch(error=>{
-                setValidated(false);
-                console.log(error)
-                setError("No se pudo crear el cliente: Verifique la información ingresada");
-                setShow2(true)
+                if(error.response.status===401){
+                    localStorage.removeItem("token")
+                   navigate("/")
+                }else{
+                    setValidated(false);
+                    setError("No se pudo crear el cliente: Verifique la información ingresada");
+                    setShow2(true)
+                }
               })
         }else{
             crearCliente({
@@ -175,9 +185,14 @@ const handleSubmit = (event) => {
                       setShow2(true)
                   }
               }).catch(error=>{
-                setValidated(false);
-                setError("No se pudo crear el cliente: Verifique la información ingresada");
-                setShow2(true)
+                if(error.response.status===401){
+                    localStorage.removeItem("token")
+                   navigate("/")
+                }else{
+                    setValidated(false);
+                    setError("No se pudo crear el cliente: Verifique la información ingresada");
+                    setShow2(true)
+                }
               })
         }
         
@@ -199,10 +214,14 @@ const handleSubmit = (event) => {
                   setShow2(true)
               }
           }).catch(error=>{
-            setValidated(false);
-            console.log(error)
-            setError("No se pudo borrar el cliente: Verifique que no esté asociado a ninguna venta");
-            setShow2(true)
+            if(error.response.status===401){
+                localStorage.removeItem("token")
+               navigate("/")
+            }else{
+                setValidated(false);
+                setError("No se pudo borrar el cliente: Verifique que no esté asociado a ninguna venta");
+                setShow2(true)
+            }
           })
         }
         handleClose();
@@ -246,7 +265,6 @@ function renderRow(props) {
                             await handleShowUpdateCliente(row);}}>
                         {row.cells.map(cell => {
                             if(cell.column.Header=="Pago"){
-                                console.log(cell)
                                 if(cell.value){
                                     return <td >Anticipado</td>;
                                 }else{

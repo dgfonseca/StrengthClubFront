@@ -3,9 +3,11 @@ import { Row,Modal,Button,Form,Alert,ListGroup} from "react-bootstrap";
 import '../index.css';
 import { useTable, useFilters, useSortBy } from "react-table";
 import { borrarVenta, getContenidoVentas } from "../apis/Ventas";
+import { useNavigate } from "react-router-dom";
 
 
 export default function VentasPanel({data}){
+const navigate = useNavigate();
 
 const [id, setId] = useState();
 const [fecha, setFecha]=useState();
@@ -44,9 +46,14 @@ const handleShowDeleteVenta = e =>{
             setContenido(result.data.contenido)
             handleShow();
         }).catch(error=>{
-            setValidated(false);
-            setError("No se pudo obtener la informacion de la venta");
-            setShow2(true)
+            if(error.response.status===401){
+                localStorage.removeItem("token")
+               navigate("/")
+            }else{
+                setValidated(false);
+                setError("No se pudo obtener la informacion de la venta");
+                setShow2(true)
+            }
           })
         
 }
@@ -113,10 +120,14 @@ const handleSubmit = (event) => {
                       setShow2(true)
                   }
               }).catch(error=>{
-                setValidated(false);
-                console.log(error)
-                setError("No se pudo borrar la venta: Verifique la información ingresada");
-                setShow2(true)
+                if(error.response.status===401){
+                    localStorage.removeItem("token")
+                   navigate("/")
+                }else{
+                    setValidated(false);
+                    setError("No se pudo borrar la venta: Verifique la información ingresada");
+                    setShow2(true)
+                }
               })
         handleClose();
   };

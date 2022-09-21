@@ -15,6 +15,8 @@ import DatePicker from 'react-date-picker';
 import { registrarVenta } from "../apis/Ventas";
 import {getPaquetes} from "../apis/Paquetes"
 import ical from "cal-parser";
+import { useNavigate } from "react-router-dom";
+
 
 
 
@@ -23,7 +25,7 @@ const localizer = momentLocalizer(moment);
 
 export default function CalendarPanel(){
 
- 
+    const navigate = useNavigate();
     const [cliente,setCliente]=useState();
     const [entrenador,setEntrenador]=useState();
     const [fecha,setFecha]=useState();
@@ -69,7 +71,6 @@ export default function CalendarPanel(){
                 event.title.toLowerCase().indexOf(searchValue) > -1,
             
         );
-        console.log(search)
         setFilteredEvents(search);
     }
 
@@ -165,20 +166,24 @@ export default function CalendarPanel(){
         setPrecioCalculado(precioCalculado+(paqueteSeleccionado.precio*cantidad))
     }
     const handleEventClick = (event)=>{
-        console.log(event.sesion)
         setSesion(event.sesion)
         setShow4(true)
 };
 
 function parsePaquetes(){
     let arrPaquetes=[];
-    getPaquetes.then(result=>{
+    getPaquetes().then(result=>{
         result.data.paquetes.forEach(element=>{
             arrPaquetes.push(
                 { value: element.codigo, label: element.nombre, precio:element.precio}
             )
         })
         setPaquetes(arrPaquetes)
+    }).catch(error=>{
+        if(error.response.status===401){
+            localStorage.removeItem("token")
+            navigate("/")
+        }
     })
 }
 function parseProductos(){
@@ -189,8 +194,13 @@ function parseProductos(){
                 { value: element.codigo, label: element.nombre, precio:element.precio}
             )
         })
+        setProductos(arrProductos);
+    }).catch(error=>{
+        if(error.response.status===401){
+            localStorage.removeItem("token")
+            navigate("/")
+        }
     })
-    setProductos(arrProductos);
 }
     function parseDate(date){
          date = date.toString().split(" ");
@@ -245,6 +255,11 @@ function parseProductos(){
                   })
             })
             setSesiones(arrSesiones);
+        }).catch(error=>{
+            if(error.response.status===401){
+                localStorage.removeItem("token")
+                navigate("/")
+            }
         })
     }
     function parseClientes(){
@@ -256,6 +271,11 @@ function parseProductos(){
                 )
             });
             setClientes(showClientes)
+        }).catch(error=>{
+            if(error.response.status===401){
+                localStorage.removeItem("token")
+                navigate("/")
+            }
         });
         
     }
@@ -268,6 +288,11 @@ function parseProductos(){
                 )
             });
             setEntrenadores(showEntrenadores)
+        }).catch(error=>{
+            if(error.response.status===401){
+                localStorage.removeItem("token")
+                navigate("/")
+            }
         });
         
     }
@@ -279,7 +304,6 @@ function parseProductos(){
     const handleUploadIcs=async ()=>{
         let arr = []
         icsData.forEach(element => {
-            console.log(element)
              crearSesionIcs({
                 cliente:element.cliente,
                 entrenador:element.entrenador,
@@ -295,11 +319,15 @@ function parseProductos(){
                     });
                   }
               }).catch(error=>{
+                if(error.response.status===401){
+                    localStorage.removeItem("token")
+                    navigate("/")
+                }else{
                     setValidated(false);
-                    console.log(error)
                     arr.push({
                     descripcion:element.descripcion
                 });
+                }
               })
         });
         await delay(1000);
@@ -326,10 +354,15 @@ function parseProductos(){
               }
               parseSesiones()
         }).catch(error=>{
-            setValidated(false);
-            setError("No se pudo eliminar la sesion: Verifique la información ingresada");
-            setShow2(true)
-            parseSesiones()
+            if(error.response.status===401){
+                localStorage.removeItem("token")
+                navigate("/")
+            }else{
+                setValidated(false);
+                setError("No se pudo eliminar la sesion: Verifique la información ingresada");
+                setShow2(true)
+                parseSesiones()
+            }
           })
           setShow4(false)
           parseSesiones()
@@ -337,7 +370,6 @@ function parseProductos(){
     }
 
     const handleModificarSesion=()=>{
-        console.log(sesion)
         registrarAsistencia({
             cliente:sesion.cliente,
             entrenador:sesion.entrenador,
@@ -353,11 +385,16 @@ function parseProductos(){
               }
               parseSesiones()
           }).catch(error=>{
-            setValidated(false);
-            setError("No se pudo modificar la sesion: Verifique la información ingresada");
-            setShow2(true)
-            parseSesiones()
-          })
+            if(error.response.status===401){
+                localStorage.removeItem("token")
+                navigate("/")
+            }else{
+                setValidated(false);
+                setError("No se pudo modificar la sesion: Verifique la información ingresada");
+                setShow2(true)
+            }
+        })
+          parseSesiones()
           setShow4(false)
           setSesion({sesion:{}})
     };
@@ -379,9 +416,14 @@ function parseProductos(){
                     setShow2(true)
                 }
             }).catch(error=>{
-                setValidated(false);
-                setError(error.response.data.message);
-                setShow2(true)
+                if(error.response.status===401){
+                    localStorage.removeItem("token")
+                    navigate("/")
+                }else{
+                    setValidated(false);
+                    setError(error.response.data.message);
+                    setShow2(true)
+                }
               })
         }
         handleCloseVenta()
@@ -429,13 +471,17 @@ function parseProductos(){
                   }
                   parseSesiones();
               }).catch(error=>{
-                setValidated(false);
-                setError("No se pudo crear la sesion: Verifique la información ingresada");
-                setShow2(true)
-                parseSesiones();
+                if(error.response.status===401){
+                    localStorage.removeItem("token")
+                    navigate("/")
+                }else{
+                    setValidated(false);
+                    setError("No se pudo crear la sesion: Verifique la información ingresada");
+                    setShow2(true)
+                    parseSesiones();
+                }
               })
             handleClose();
-        
             }
         }
       };
@@ -501,7 +547,7 @@ function parseProductos(){
                                         <Form.Label style={{color:"black"}}>Asistió:</Form.Label>
                                         <Form.Check
                                         defaultChecked={sesion.asistio}
-                                        onChange={event=>{setSesion({...sesion,asistio:event.target.checked});console.log(event.target.checked)}}
+                                        onChange={event=>{setSesion({...sesion,asistio:event.target.checked});}}
                                         />
                                     </Form.Group>    
                                     <Form.Group className="mb-3">

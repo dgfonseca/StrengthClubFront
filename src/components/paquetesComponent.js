@@ -6,11 +6,12 @@ import Select from 'react-select'
 import { isNaN } from "formik";
 import {crearPaquete, getProductosPaquete, deletePaquete, actualizarPaquete} from "../apis/Paquetes"
 import { useTable, useFilters, useSortBy } from "react-table";
+import { useNavigate } from "react-router-dom";
 
 
 
 export default function PaquetesPanel({data}){
-
+    const navigate = useNavigate();
 const [nombre, setNombre] = useState();
 const [codigo, setCodigo] = useState();
 const [precio,setPrecio] = useState();
@@ -54,9 +55,14 @@ const handleShowUpdatePaquetes = e =>{
         setPrecioCalculado(result.data.precio[0].sum);
         handleShow();
     }).catch(error=>{
-        setValidated(false);
-        setError("No se pudo obtener la informacion del paquete");
-        setShow2(true)
+        if(error.response.status===401){
+            localStorage.removeItem("token")
+           navigate("/")
+        }else{
+            setValidated(false);
+            setError("No se pudo obtener la informacion del paquete");
+            setShow2(true)
+        }
       })
 }
 
@@ -99,8 +105,13 @@ function parseProductos(){
                 { value: element.codigo, label: element.nombre, precio:element.precio}
             )
         })
+        setProductos(arrProductos);
+    }).catch(error=>{
+        if(error.response.status===401){
+            localStorage.removeItem("token")
+           navigate("/")
+        }
     })
-    setProductos(arrProductos);
 }
 
 const [filterInput, setFilterInput] = useState("");
@@ -151,12 +162,6 @@ const handleSubmit = (event) => {
     setValidated(true);
     if(codigo&&nombre&&productos&&precio){
         if(buttonName==="Modificar"){
-            console.log({
-                nombre:nombre,
-                codigo:codigo,
-                productos:productosSeleccionados,
-                precio:precio
-              })
             actualizarPaquete({
                 nombre:nombre,
                 codigo:codigo,
@@ -172,10 +177,14 @@ const handleSubmit = (event) => {
                       setShow2(true)
                   }
               }).catch(error=>{
-                setValidated(false);
-                console.log(error)
-                setError("No se pudo crear el paquete: Verifique la información ingresada");
-                setShow2(true)
+                if(error.response.status===401){
+                    localStorage.removeItem("token")
+                   navigate("/")
+                }else{
+                    setValidated(false);
+                    setError("No se pudo crear el paquete: Verifique la información ingresada");
+                    setShow2(true)
+                }
               })
         }else{
             crearPaquete({
@@ -193,9 +202,14 @@ const handleSubmit = (event) => {
                       setShow2(true)
                   }
               }).catch(error=>{
-                setValidated(false);
-                setError("No se pudo crear el paquete: Verifique la información ingresada");
-                setShow2(true)
+                if(error.response.status===401){
+                    localStorage.removeItem("token")
+                   navigate("/")
+                }else{
+                    setValidated(false);
+                    setError("No se pudo crear el paquete: Verifique la información ingresada");
+                    setShow2(true)
+                }
               })
         }
 
@@ -220,9 +234,14 @@ const handleSubmit = (event) => {
                   setShow2(true)
               }
           }).catch(error=>{
-            setValidated(false);
-            setError("No se pudo borrar el cliente: Verifique que no esté asociado a ninguna venta");
-            setShow2(true)
+            if(error.response.status===401){
+                localStorage.removeItem("token")
+               navigate("/")
+            }else{
+                setValidated(false);
+                setError("No se pudo borrar el cliente: Verifique que no esté asociado a ninguna venta");
+                setShow2(true)
+            }
           })
         }
         handleClose();

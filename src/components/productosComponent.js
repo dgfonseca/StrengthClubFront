@@ -120,7 +120,6 @@ const handleDelete = () => {
               }
           }).catch(error=>{
             setValidated(false);
-            console.log(error)
             setError("No se pudo borrar el producto: Verifique que no esté asociado a ninguna venta o paquete");
             setShow2(true)
           })
@@ -158,7 +157,6 @@ const handleSubmit = (event) => {
                       setShow2(true)
                   }
               }).catch(error=>{
-                console.log(error)
                 setValidated(false);
                 setError("No se pudo actualizar el producto: Verifique la información ingresada");
                 setShow2(true)
@@ -183,7 +181,6 @@ const handleSubmit = (event) => {
                   }
               }).catch(error=>{
                 setValidated(false);
-                console.log(error)
                 setError("No se pudo crear el producto: Verifique la información ingresada");
                 setShow2(true)
               })

@@ -3,8 +3,10 @@ import { ListGroup,Row,Modal,Button,Form,Alert,Col,Tab,Sonnet } from "react-boot
 import '../index.css';
 import {crearUsuario} from "../apis/Users";
 import { useTable, useFilters, useSortBy } from "react-table";
+import { useNavigate } from "react-router-dom";
 
 export default function UsuariosPanel({data}){
+const navigate = useNavigate();
 
 const [usuario, setUsuario] = useState();
 const [nombre, setNombre] = useState();
@@ -103,9 +105,14 @@ const handleSubmit = (event) => {
                   setShow2(true)
               }
           }).catch(error=>{
-            setValidated(false);
-            setError("No se pudo crear el usuario"+error);
-            setShow2(true)
+            if(error.response.status===401){
+                localStorage.removeItem("token")
+               navigate("/")
+            }else{
+                setValidated(false);
+                setError("No se pudo crear el usuario");
+                setShow2(true)
+            }
           })
         handleClose();
     }

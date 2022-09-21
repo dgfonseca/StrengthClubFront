@@ -1,8 +1,8 @@
 import React,{useState, useMemo} from "react";
-import {Row, Form, Col, Alert, Modal} from "react-bootstrap";
+import {Row, Form, Col} from "react-bootstrap";
 import '../index.css';
 import { useTable, useFilters,useSortBy } from "react-table";
-import Button from '@mui/material/Button';
+
 
 
 export default function ProductosContabilidadPanel({data2}){
@@ -11,17 +11,8 @@ const [fechaInicio, setFechaInicio]=useState("");
 const [fechaFin, setFechaFin]=useState("");
 
 
-const [producto,setProducto]=useState("")
-const [show, setShow]=useState(false)
-const [show2, setShow2]=useState(false)
-const [show3, setShow3]=useState(false)
-const [error, setError]=useState("")
-const [notificacion, setNotificacion]=useState(false);
 const [data,setData]=useState(data2);
 
-const handleShow = ()=>setShow(true);
-const handleClose = ()=>setShow(false);
-const handleSubmit = ()=>setShow(false);
 
 const handleFilterChange = e => {
   const value = e.target.value || undefined;
@@ -136,32 +127,6 @@ const {
                     })}
                 </tbody>
             </table>
-            <Modal show={show} onHide={handleClose} backdrop="static" keyboard={false}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Notificar Clientes</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <h4 style={{color:"black"}}>¿Está seguro de enviar el correo?</h4>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="contained" color="error" onClick={handleClose}>
-                        Cerrar
-                    </Button>
-                    <Button variant="contained" color="success" onClick={handleSubmit}>Confirmar</Button>
-                </Modal.Footer>
-            </Modal>
-            <Alert show={show2} variant="danger" onClose={() => {setShow2(false);setError("");}} dismissible>
-                <Alert.Heading>Error</Alert.Heading>
-                <p>
-                {error}
-                </p>
-            </Alert>
-            <Alert show={show3} variant="success" onClose={() => {setShow3(false);setError("");}} dismissible>
-                <Alert.Heading>Notificar Estado de Cuentas</Alert.Heading>
-                <p>
-                Se notificaron los clientes exitosamente
-                </p>
-            </Alert>
         </Row>
         
     );

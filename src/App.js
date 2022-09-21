@@ -12,11 +12,9 @@ import ContabilidadPane from './components/contabilidadComponent';
 function App() {
 
   const [token, setToken] = useState(localStorage.getItem('token')!=null?JSON.parse(localStorage.getItem('token')):"");
-  const [role, setRole]=useState(localStorage.getItem('token')!=null?JSON.parse(localStorage.getItem('token')).rol:"")
   const handleChange = useCallback((newValue) => {
     setToken(newValue);
-    setRole(newValue.rol);
- },[token,role]);
+ },[token]);
 
   return (
     <Router>
@@ -41,10 +39,10 @@ function App() {
           </Row>
           <Row>
             <Routes>
-              <Route path='/home' element={(role==='ADMIN' || role==='CAJERO') &&token!==""?(<HomePane value={token}></HomePane>):(<Login value={token} onChange={handleChange}/>)}></Route>
-              <Route path="/admin" element={role==='ADMIN' && token!==""?(<AdminPane value={token}></AdminPane>):(token===""?(<Login value={token} onChange={handleChange}/>):(<HomePane></HomePane>))}/>
+              <Route path='/home' element={(token.rol==='ADMIN' || token.rol==='CAJERO') &&token!==""?(<HomePane value={token}></HomePane>):(<Login value={token} onChange={handleChange}/>)}></Route>
+              <Route path="/admin" element={token.rol==='ADMIN' && token.rol!==""?(<AdminPane value={token}></AdminPane>):(token===""?(<Login value={token} onChange={handleChange}/>):(<HomePane></HomePane>))}/>
               <Route path="/" element={<Login value={token} onChange={handleChange}/>} />
-              <Route path="/contabilidad" element={role==='ADMIN' && token!==""?(<ContabilidadPane value={token}></ContabilidadPane>):(token===""?(<Login value={token} onChange={handleChange}/>):(<HomePane></HomePane>))} />
+              <Route path="/contabilidad" element={token.rol==='ADMIN' && token.rol!==""?(<ContabilidadPane value={token}></ContabilidadPane>):(token===""?(<Login value={token} onChange={handleChange}/>):(<HomePane></HomePane>))} />
             </Routes>
           </Row>
         </Container>

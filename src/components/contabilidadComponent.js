@@ -5,25 +5,37 @@ import { getContabilidadProductos } from "../apis/Productos";
 import { getContabilidadClientes } from "../apis/Clientes";
 import ProductosContabilidadPanel from "./productosContabilidadPanel";
 import ClientesContabilidadPanel from "./clientesContabilidadPanel";
+import { useNavigate } from "react-router-dom";
 
 
 
 export default function ContabilidadPane(props){
+    const navigate = useNavigate();
 
     const [show, setShow]=useState();
     const [productos, setProductos]=useState([]);
     const [clientes, setClientes]=useState([]);
 
     const handleShowProductos = async ()=>{
-        const ent = await getContabilidadProductos()
-        setProductos(ent.data.productos)
-        setShow("Productos");
+        try {
+            const ent = await getContabilidadProductos()
+            setProductos(ent.data.productos)
+            setShow("Productos");
+        } catch (error) {
+            localStorage.removeItem("token")
+            navigate("/")
+        }
     }
 
     const handleShowClientes = async ()=>{
-        const ent = await getContabilidadClientes()
-        setClientes(ent.data.clientes)
-        setShow("Clientes");
+        try {
+            const ent = await getContabilidadClientes()
+            setClientes(ent.data.clientes)
+            setShow("Clientes");
+        } catch (error) {
+            localStorage.removeItem("token")
+            navigate("/")
+        }
     }
 
 
