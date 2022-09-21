@@ -124,7 +124,7 @@ export default function HomePane(props){
 
 function parsePaquetes(){
     let arrPaquetes=[];
-    getPaquetes.then(result=>{
+    getPaquetes().then(result=>{
         result.data.paquetes.forEach(element=>{
             arrPaquetes.push(
                 { value: element.codigo, label: element.nombre, precio:element.precio}
