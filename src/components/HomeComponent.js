@@ -11,14 +11,14 @@ import {getProductosHabilitados} from "../apis/Productos";
 import TimePicker from 'react-time-picker';
 import DatePicker from 'react-date-picker';
 import { registrarVenta, registrarAbono } from "../apis/Ventas";
-import { getPaquetes } from "../apis/Paquetes";
-
+import {getPaquetes} from "../apis/Paquetes"
+import { useNavigate } from "react-router-dom";
 
 
 
 
 export default function HomePane(props){
-
+    const navigate = useNavigate();
  
     const [cliente,setCliente]=useState();
     const [entrenador,setEntrenador]=useState();
@@ -129,8 +129,13 @@ function parsePaquetes(){
             arrPaquetes.push(
                 { value: element.codigo, label: element.nombre, precio:element.precio}
             )
+            setPaquetes(arrPaquetes)
         })
-        setPaquetes(arrPaquetes)
+    }).catch(error=>{
+        if(error.response.status===401){
+            localStorage.removeItem("token")
+           navigate("/")
+        }
     })
 }
 function parseProductos(){
@@ -141,8 +146,13 @@ function parseProductos(){
                 { value: element.codigo, label: element.nombre, precio:element.precio}
             )
         })
+        setProductos(arrProductos);
+    }).catch(error=>{
+        if(error.response.status===401){
+            localStorage.removeItem("token")
+           navigate("/")
+        }
     })
-    setProductos(arrProductos);
 }
     function parseClientes(){
         getClientes().then(result=>{
@@ -153,6 +163,11 @@ function parseProductos(){
                 )
             });
             setClientes(showClientes)
+        }).catch(error=>{
+            if(error.response.status===401){
+                localStorage.removeItem("token")
+               navigate("/")
+            }
         });
         
     }
@@ -165,6 +180,11 @@ function parseProductos(){
                 )
             });
             setEntrenadores(showEntrenadores)
+        }).catch(error=>{
+            if(error.response.status===401){
+                localStorage.removeItem("token")
+               navigate("/")
+            }
         });
         
     }
@@ -190,9 +210,15 @@ function parseProductos(){
                       setShow2(true)
                   }
                 }).catch(error=>{
-                    setValidated(false);
-                    setError(error.response.data.message);
-                    setShow2(true)})
+                    if(error.response.status===401){
+                        localStorage.removeItem("token")
+                       navigate("/")
+                    }else{
+                        setValidated(false);
+                        setError(error.response.data.message);
+                        setShow2(true)
+                    }
+                })
             }else{
                 setError("No se pudo registrar el abono: Verifique la información ingresada");
                 setShow2(true)
@@ -218,9 +244,14 @@ function parseProductos(){
                     setShow2(true)
                 }
             }).catch(error=>{
-                setValidated(false);
-                setError(error.response.data.message);
-                setShow2(true)
+                if(error.response.status===401){
+                    localStorage.removeItem("token")
+                   navigate("/")
+                }else{
+                    setValidated(false);
+                    setError(error.response.data.message);
+                    setShow2(true)
+                }
               })
         }
         handleCloseVenta()
@@ -269,9 +300,14 @@ function parseProductos(){
                       setShow2(true)
                   }
               }).catch(error=>{
-                setValidated(false);
-                setError("No se pudo crear la sesion: Verifique la información ingresada");
-                setShow2(true)
+                if(error.response.status===401){
+                    localStorage.removeItem("token")
+                   navigate("/")
+                }else{
+                    setValidated(false);
+                    setError("No se pudo crear la sesion: Verifique la información ingresada");
+                    setShow2(true)
+                }
               })
             handleClose();
         
