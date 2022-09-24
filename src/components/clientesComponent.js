@@ -1,7 +1,7 @@
 import React,{useState, useMemo, setState} from "react";
 import { ListGroup,Row,Modal,Button,Form,Alert,Col,Tab } from "react-bootstrap";
 import '../index.css';
-import {crearCliente, actualizarCliente, deleteCliente, getVentasCliente} from "../apis/Clientes"
+import {crearCliente, actualizarCliente, deleteCliente, getVentasCliente, getClientes} from "../apis/Clientes"
 import { useTable, useFilters, useSortBy } from "react-table";
 import Box from '@mui/material/Box';
 import ListItem from '@mui/material/ListItem';
@@ -14,7 +14,7 @@ import { useNavigate } from "react-router-dom";
 
 
 
-export default function ClientesPanel({data}){
+export default function ClientesPanel({data,onChange}){
 const navigate = useNavigate();
 const [direccion, setDireccion] = useState();
 const [nombre, setNombre] = useState();
@@ -60,7 +60,7 @@ const handleShowUpdateCliente =  async e =>{
             setEmail(e.cells[3].value)
             setDireccion(e.cells[4].value)
             setFechaNacimiento(e.cells[5].value)
-            setAnticipado(e.cells[6].value)
+            setAnticipado(e.cells[7].value)
             handleShow()
         }).catch(error=>{
             if(error.response.status===401){
@@ -152,6 +152,9 @@ const handleSubmit = (event) => {
                 if(response.request.status==200){
                     setShow3(true)
                     setSuccess("actualizado")
+                    getClientes().then(response=>{
+                        onChange(response.data.clientes)
+                    })
                   }else{
                       setError("No se pudo crear el cliente: Verifique la información ingresada");
                       setShow2(true)
@@ -161,6 +164,7 @@ const handleSubmit = (event) => {
                     localStorage.removeItem("token")
                    navigate("/")
                 }else{
+                    console.log(error)
                     setValidated(false);
                     setError("No se pudo crear el cliente: Verifique la información ingresada");
                     setShow2(true)
@@ -180,6 +184,9 @@ const handleSubmit = (event) => {
                 if(response.request.status==200){
                     setShow3(true)
                     setSuccess("creado")
+                    getClientes().then(response=>{
+                        onChange(response.data.clientes)
+                    })
                   }else{
                       setError("No se pudo crear el cliente: Verifique la información ingresada");
                       setShow2(true)
@@ -209,6 +216,9 @@ const handleSubmit = (event) => {
             if(response.request.status==200){
                 setSuccess("borrado")
                 setShow3(true)
+                getClientes().then(response=>{
+                    onChange(response.data.clientes)
+                })
               }else{
                   setError("No se pudo borrar el cliente: Verifique que no esté asociado a ninguna venta");
                   setShow2(true)

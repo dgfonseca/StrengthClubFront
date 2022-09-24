@@ -31,7 +31,7 @@ async function getProductosHabilitados(){
 }
 
 async function deleteProductos(body){
-  return await axios.delete("https://strength-club-sprint1.herokuapp.com/productos",{data:body},{ headers: authHeader() });
+  return await axios.delete("https://strength-club-sprint1.herokuapp.com/productos",{ headers: authHeader(),data:body});
 }
 
 export {getProductos, crearProducto,actualizarProducto,getProductosHabilitados,deleteProductos,getContabilidadProductos};

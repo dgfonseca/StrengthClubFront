@@ -2,11 +2,11 @@ import React,{useState, useMemo} from "react";
 import { Row,Modal,Button,Form,Alert,ListGroup} from "react-bootstrap";
 import '../index.css';
 import { useTable, useFilters, useSortBy } from "react-table";
-import { borrarVenta, getContenidoVentas } from "../apis/Ventas";
+import { borrarVenta, getContenidoVentas, getVentas } from "../apis/Ventas";
 import { useNavigate } from "react-router-dom";
 
 
-export default function VentasPanel({data}){
+export default function VentasPanel({data,onChange}){
 const navigate = useNavigate();
 
 const [id, setId] = useState();
@@ -115,6 +115,9 @@ const handleSubmit = (event) => {
                 if(response.request.status==200){
                     setShow3(true)
                     setSuccess("borrado")
+                    getVentas().then(response=>{
+                        onChange(response.data.ventas)
+                    })
                   }else{
                       setError("No se pudo borrar la venta: Verifique la información ingresada");
                       setShow2(true)

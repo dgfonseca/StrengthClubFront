@@ -55,7 +55,7 @@ export default function HomePane(props){
 
     
     const handleClose = () => {setShow(false);setAbono(0);setCliente("")}
-    const handleClose4 = () => {setShow4(false);setCliente("");setAbono(0)}
+    const handleClose4 = () => {setShow4(false);setCliente("");setAbono(0);setFecha(null);setHora(null)}
     const handleCloseVenta = () => {setShowVenta(false);setProductosSeleccionados([]);setPaquetesSeleccionados([]);setCantidad(1);setPrecioCalculado(0)};
     const handleShow = () => {setShow(true);parseClientes();parseEntrenadores();}; 
     const handleShow4 = () =>{setShow4(true);parseClientes()}
@@ -188,19 +188,41 @@ function parseProductos(){
         });
         
     }
-
-        const handleSubmitAbono = (event)=>{
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+        const handleSubmitAbono = async (event)=>{
             const form = event.currentTarget;
         if (form.checkValidity() === false) {
           event.preventDefault();
           event.stopPropagation();
           setValidated(true);
         }else{
+            let date;
+            if(fecha&&hora){
+                let partsDate = fecha.toString().split(" ");
+                let months = {
+                    Jan: "01",
+                    Feb: "02",
+                    Mar: "03",
+                    Apr: "04",
+                    May: "05",
+                    Jun: "06",
+                    Jul: "07",
+                    Aug: "08",
+                    Sep: "09",
+                    Oct: "10",
+                    Nov: "11",
+                    Dec: "12"
+                };
+                date = partsDate[3]+"-"+months[partsDate[1]]+"-"+partsDate[2]+" "+hora
+            }
             if(cliente&&abono){
                 registrarAbono({
                     cliente:cliente.value,
-                    abono:abono
-                }).then(response=>{
+                    abono:abono,
+                    fecha:date
+                }).then(async response=>{
                     setValidated(false);
                 if(response.request.status===200){
                     setSuccess("Abono registrado exitosamente")
@@ -209,7 +231,10 @@ function parseProductos(){
                       setError("No se pudo registrar el abono: Verifique la información ingresada");
                       setShow2(true)
                   }
-                }).catch(error=>{
+                  await sleep(2000);
+                  setShow2(false)
+                  setShow3(false)
+                }).catch(async error=>{
                     if(error.response.status===401){
                         localStorage.removeItem("token")
                        navigate("/")
@@ -218,8 +243,12 @@ function parseProductos(){
                         setError(error.response.data.message);
                         setShow2(true)
                     }
+                    await sleep(2000);
+                    setShow2(false)
+                    setShow3(false)
                 })
             }else{
+                await sleep(2000);
                 setError("No se pudo registrar el abono: Verifique la información ingresada");
                 setShow2(true)
             }
@@ -351,6 +380,11 @@ function parseProductos(){
                                         <Form.Label style={{color:"black"}}>Precio</Form.Label>
                                         <Form.Control required type="number" placeholder="Precio" defaultValue={0} onChange={e=>setAbono(e.target.value)}/>
                                         <Form.Control.Feedback type="invalid">Precio.</Form.Control.Feedback>
+                                    </Form.Group>
+                                    <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea2">
+                                        <Form.Label style={{color:"black"}}>Fecha</Form.Label>
+                                        <DatePicker onChange={value=>setFecha(value)} value={fecha} />
+                                        <TimePicker onChange={value=>setHora(value)} value={hora} />
                                     </Form.Group>
                                 </Form>
                             </Modal.Body>

@@ -1,12 +1,12 @@
 import React,{useMemo, useState} from "react";
 import {Row,Modal,Button,Form,Alert} from "react-bootstrap";
 import '../index.css';
-import {actualizarEntrenador, crearEntrenador, deleteEntrenador} from "../apis/Entrenadores.js";
+import {actualizarEntrenador, crearEntrenador, deleteEntrenador, getEntrenadores} from "../apis/Entrenadores.js";
 import { SketchPicker } from 'react-color';
 import { useTable, useFilters, useSortBy } from "react-table";
 import { useNavigate } from "react-router-dom";
 
-export default function EntrenadoresPanel({data}){
+export default function EntrenadoresPanel({data,onChange}){
 const navigate = useNavigate();
 const [filterInput, setFilterInput] = useState("");
 
@@ -115,6 +115,9 @@ const handleSubmit = (event) => {
                   setValidated(false);
                 if(response.request.status===200){
                     setShow3(true)
+                    getEntrenadores().then(response=>{
+                        onChange(response.data.entrenadores);
+                    })
                   }else{
                       setError("No se pudo crear el entrenador: Verifique la información ingresada");
                       setShow2(true)
@@ -141,6 +144,9 @@ const handleSubmit = (event) => {
                   setValidated(false);
                 if(response.request.status===200){
                     setShow3(true)
+                    getEntrenadores().then(response=>{
+                        onChange(response.data.entrenadores);
+                    })
                   }else{
                       setError("No se pudo crear el entrenador: Verifique la información ingresada");
                       setShow2(true)
@@ -170,6 +176,9 @@ const handleSubmit = (event) => {
             if(response.request.status===200){
                 setSuccess("borrado")
                 setShow3(true)
+                getEntrenadores().then(response=>{
+                    onChange(response.data.entrenadores);
+                })
               }else{
                   setError("No se pudo borrar el entrenador: Verifique que no esté asociado a ninguna sesion");
                   setShow2(true)

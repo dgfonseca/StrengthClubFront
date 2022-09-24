@@ -1,11 +1,11 @@
 import React,{useState,useMemo} from "react";
 import { ListGroup,Row,Modal,Button,Form,Alert,Col,Tab,Sonnet } from "react-bootstrap";
 import '../index.css';
-import {crearUsuario} from "../apis/Users";
+import {crearUsuario, getUsuarios} from "../apis/Users";
 import { useTable, useFilters, useSortBy } from "react-table";
 import { useNavigate } from "react-router-dom";
 
-export default function UsuariosPanel({data}){
+export default function UsuariosPanel({data, onChange}){
 const navigate = useNavigate();
 
 const [usuario, setUsuario] = useState();
@@ -100,6 +100,9 @@ const handleSubmit = (event) => {
               setValidated(false);
             if(response.request.status==200){
                 setShow3(true)
+                getUsuarios().then(response=>{
+                    onChange(response.data.usuarios)
+                })
               }else{
                   setError("No se pudo crear el usuario");
                   setShow2(true)

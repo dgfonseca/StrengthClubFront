@@ -26,6 +26,9 @@ const localizer = momentLocalizer(moment);
 export default function CalendarPanel(){
 
     const navigate = useNavigate();
+
+    const[fechaInicio, setFechaInicio]=useState();
+    const[fechaFin, setFechaFin]=useState();
     const [cliente,setCliente]=useState();
     const [entrenador,setEntrenador]=useState();
     const [fecha,setFecha]=useState();
@@ -92,15 +95,26 @@ export default function CalendarPanel(){
             let entrenador = json.calendarData['x-wr-calname'];
             json.events.forEach(element => {
                 var input = moment(element.dtstart.value);
-                if((now.isoWeek() === input.isoWeek())&&now.year()===input.year()){
-                    var cliente = element.summary;
-                    icsDataSesion.push({
-                        cliente:cliente.value,
-                        entrenador:entrenador,
-                        fecha:element.dtstart.value,
-                        descripcion:element.description.value
-                    })
-                    
+                if(fechaInicio&&fechaFin){
+                    if(input>=fechaInicio && input<=fechaFin){
+                        var cliente = element.summary;
+                        icsDataSesion.push({
+                            cliente:cliente.value,
+                            entrenador:entrenador,
+                            fecha:element.dtstart.value,
+                            descripcion:element.description.value
+                        })
+                    }
+                }else{
+                    if((now.isoWeek() === input.isoWeek())&&now.year()===input.year()){
+                        var cliente = element.summary;
+                        icsDataSesion.push({
+                            cliente:cliente.value,
+                            entrenador:entrenador,
+                            fecha:element.dtstart.value,
+                            descripcion:element.description.value
+                        })
+                    }
                 }
             });
             setIcsData(icsDataSesion)
@@ -313,6 +327,7 @@ function parseProductos(){
                   setValidated(false);
                 if(response.request.status===200){
                     setShow3(true)
+                    parseSesiones()
                   }else{
                     arr.push({
                         descripcion:element.descripcion
@@ -330,6 +345,7 @@ function parseProductos(){
                 }
               })
         });
+        setIcsData([])
         await delay(1000);
         setFailedEventsIcs(arr)
         if(failedEventsIcs.length!==0){
@@ -343,16 +359,19 @@ function parseProductos(){
     }
     const handleDeleteSesion=()=>{
         desagendarSesion({
-            id:sesion.sesion.id
+            id:sesion.id
         }).then(response=>{
             if(response.request.status===200){
                 setSuccess("Sesion desagendada exitosamente")
                 setShow3(true)
+                
               }else{
                 setError("No se pudo eliminar la sesion: Verifique que no se haya registrado la asistencia a dicha sesión");
                 setShow2(true)
               }
               parseSesiones()
+              setShow4(false)
+              setSesion({sesion:{}})
         }).catch(error=>{
             if(error.response.status===401){
                 localStorage.removeItem("token")
@@ -362,11 +381,11 @@ function parseProductos(){
                 setError("No se pudo eliminar la sesion: Verifique la información ingresada");
                 setShow2(true)
                 parseSesiones()
+                setShow4(false)
+                setSesion({sesion:{}})
             }
           })
-          setShow4(false)
-          parseSesiones()
-          setSesion({sesion:{}})
+          
     }
 
     const handleModificarSesion=()=>{
@@ -383,6 +402,8 @@ function parseProductos(){
                 setError("No se pudo modificar la sesion: Verifique la información ingresada");
                 setShow2(true)
               }
+              setShow4(false)
+              setSesion({sesion:{}})
               parseSesiones()
           }).catch(error=>{
             if(error.response.status===401){
@@ -393,10 +414,11 @@ function parseProductos(){
                 setError("No se pudo modificar la sesion: Verifique la información ingresada");
                 setShow2(true)
             }
+            parseSesiones()
+            setShow4(false)
+            setSesion({sesion:{}})
         })
-          parseSesiones()
-          setShow4(false)
-          setSesion({sesion:{}})
+
     };
 
     const handleSubmitRegistrarVenta = ()=>{
@@ -700,11 +722,18 @@ function parseProductos(){
                         </Modal>
                     </Col>
                 </Row>
+                <Row>
+                </Row>
                 <Row style={{padding:"1%",backgroundImage:"linear-gradient(to right, lightgrey, grey,lightgrey)"}}>
                     <Col className="col-sm" >
                         <Form.Group controlId="formFile" className="mb-3" style={{width:"40%", marginLeft:"30%"}}>
-                            <Form.Label style={{color:"black"}}>Cargar Calendario</Form.Label>
                             <Form.Control type="file" onChange={(e)=>readIcs(e)}/>
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Label style={{color:"black"}}>Fecha Inicio</Form.Label>
+                            <DatePicker onChange={value=>setFechaInicio(value)} value={fechaInicio} />
+                            <Form.Label style={{color:"black"}}>Fecha Fin</Form.Label>
+                            <DatePicker onChange={value=>setFechaFin(value)} value={fechaFin} />
                         </Form.Group>
                         <Button variant="dark" onClick={handleUploadIcs}>Cargar Data</Button>
                     </Col>

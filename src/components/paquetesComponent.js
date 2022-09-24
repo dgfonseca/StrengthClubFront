@@ -4,13 +4,13 @@ import '../index.css';
 import  {getProductosHabilitados}  from "../apis/Productos";
 import Select from 'react-select'
 import { isNaN } from "formik";
-import {crearPaquete, getProductosPaquete, deletePaquete, actualizarPaquete} from "../apis/Paquetes"
+import {crearPaquete, getProductosPaquete, deletePaquete, actualizarPaquete, getPaquetes} from "../apis/Paquetes"
 import { useTable, useFilters, useSortBy } from "react-table";
 import { useNavigate } from "react-router-dom";
 
 
 
-export default function PaquetesPanel({data}){
+export default function PaquetesPanel({data,onChange}){
     const navigate = useNavigate();
 const [nombre, setNombre] = useState();
 const [codigo, setCodigo] = useState();
@@ -172,6 +172,9 @@ const handleSubmit = (event) => {
                 if(response.request.status===200){
                     setShow3(true)
                     setSuccess("actualizado")
+                    getPaquetes().then(response=>{
+                        onChange(response.data.paquetes)
+                    })
                   }else{
                       setError("No se pudo crear el paquete: Verifique la información ingresada");
                       setShow2(true)
@@ -197,6 +200,9 @@ const handleSubmit = (event) => {
                 if(response.request.status===200){
                     setShow3(true)
                     setSuccess("creado")
+                    getPaquetes().then(response=>{
+                        onChange(response.data.paquetes)
+                    })
                   }else{
                       setError("No se pudo crear el paquete: Verifique la información ingresada");
                       setShow2(true)
@@ -229,6 +235,9 @@ const handleSubmit = (event) => {
             if(response.request.status===200){
                 setSuccess("borrado")
                 setShow3(true)
+                getPaquetes().then(response=>{
+                    onChange(response.data.paquetes)
+                })
               }else{
                   setError("No se pudo borrar el cliente: Verifique que no esté asociado a ninguna venta");
                   setShow2(true)

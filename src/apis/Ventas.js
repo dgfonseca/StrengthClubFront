@@ -25,7 +25,7 @@ async function getContenidoVentas(body){
 
 
 async function borrarVenta(body){
-  return await axios.delete("https://strength-club-sprint1.herokuapp.com/venta",{data:body}, { headers: authHeader() });
+  return await axios.delete("https://strength-club-sprint1.herokuapp.com/venta",{headers: authHeader(),data:body});
 }
 
 

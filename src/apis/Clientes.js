@@ -32,11 +32,12 @@ async function getContabilidadClientes(body){
 }
 
 async function actualizarCliente(body){
+  console.log(body)
   return await axios.put("https://strength-club-sprint1.herokuapp.com/clientes",body,{ headers: authHeader() });
 }
 
 async function deleteCliente(body){
-  return await axios.delete("https://strength-club-sprint1.herokuapp.com/clientes",{data:body},{ headers: authHeader() });
+  return await axios.delete("https://strength-club-sprint1.herokuapp.com/clientes",{headers: authHeader(),data:body});
 }
 
 export {getClientes, crearCliente,actualizarCliente,deleteCliente,getVentasCliente,getContabilidadClientes,notificarClienteCorreo,notificarClientesCorreo}

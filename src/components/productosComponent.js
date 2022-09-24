@@ -1,12 +1,12 @@
 import React,{useState, useMemo} from "react";
 import { Row,Modal,Button,Form,Alert, InputGroup } from "react-bootstrap";
 import '../index.css';
-import {crearProducto,actualizarProducto,deleteProductos} from "../apis/Productos";
+import {crearProducto,actualizarProducto,deleteProductos, getProductos} from "../apis/Productos";
 import { useTable, useFilters, useSortBy } from "react-table";
 
 
 
-export default function ProductosPanel({data}){
+export default function ProductosPanel({data,onChange}){
 
 
 const [nombre, setNombre] = useState();
@@ -114,6 +114,9 @@ const handleDelete = () => {
             if(response.request.status===200){
                 setSuccess("borrado")
                 setShow3(true)
+                getProductos().then(result=>{
+                    onChange(result.data.productos)
+                })
               }else{
                   setError("No se pudo borrar el producto: Verifique que no esté asociado a ninguna venta o paquete");
                   setShow2(true)
@@ -152,6 +155,9 @@ const handleSubmit = (event) => {
                 if(response.request.status===200){
                     setSuccess("actualizado")
                     setShow3(true)
+                    getProductos().then(result=>{
+                        onChange(result.data.productos)
+                    })
                   }else{
                       setError("No se pudo actualizar el producto: Verifique la información ingresada");
                       setShow2(true)
@@ -175,6 +181,9 @@ const handleSubmit = (event) => {
                 if(response.request.status===200){
                     setSuccess("creado")
                     setShow3(true)
+                    getProductos().then(result=>{
+                        onChange(result.data.productos)
+                    })
                   }else{
                       setError("No se pudo crear el producto: Verifique la información ingresada");
                       setShow2(true)

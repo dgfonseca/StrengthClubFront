@@ -15,6 +15,7 @@ import { getPaquetes } from "../apis/Paquetes";
 import { getVentas } from "../apis/Ventas";
 import CalendarPanel from "./calendarioComponent";
 import { useNavigate } from "react-router-dom";
+import { useCallback } from "react";
 
 
 
@@ -28,6 +29,25 @@ export default function AdminPane(props){
     const [usuarios, setUsuarios]=useState([]);
     const [paquetes, setPaquetes]=useState([]);
     const [ventas, setVentas]=useState([]);
+
+    const handleChangeEntrenadores = useCallback((newValue) => {
+        setEntrenadores(newValue);
+     },[entrenadores]);
+    const handleChangeProductos = useCallback((newValue) => {
+        setProductos(newValue);
+     },[productos]);
+    const handleChangeClientes = useCallback((newValue) => {
+        setClientes(newValue);
+     },[clientes]);
+    const handleChangeUsuarios = useCallback((newValue) => {
+        setUsuarios(newValue);
+     },[usuarios]);
+    const handleChangePaquetes = useCallback((newValue) => {
+        setPaquetes(newValue);
+     },[paquetes]);
+    const handleChangeVentas = useCallback((newValue) => {
+        setVentas(newValue);
+     },[ventas]);
 
     const handleShowEntrenadores = async ()=>{
         try {
@@ -101,17 +121,17 @@ export default function AdminPane(props){
 
     function panel(){
         if(show==="Entrenadores"){
-            return <EntrenadoresPanel data={entrenadores}></EntrenadoresPanel>
+            return <EntrenadoresPanel data={entrenadores} onChange={handleChangeEntrenadores}></EntrenadoresPanel>
         }else if(show==="Usuarios"){
-            return<UsuariosPanel data={usuarios}></UsuariosPanel>
+            return<UsuariosPanel data={usuarios} onChange={handleChangeUsuarios}></UsuariosPanel>
         }else if(show==="Clientes"){
-            return<ClientesPanel data={clientes}></ClientesPanel>
+            return<ClientesPanel data={clientes} onChange={handleChangeClientes}></ClientesPanel>
         }else if(show==="Productos"){
-            return <ProductosPanel data={productos}></ProductosPanel>
+            return <ProductosPanel data={productos} onChange={handleChangeProductos}></ProductosPanel>
         }else if(show==="Paquetes"){
-            return <PaquetesPanel data={paquetes}></PaquetesPanel>
+            return <PaquetesPanel data={paquetes} onChange={handleChangePaquetes}></PaquetesPanel>
         }else if(show==="Ventas"){
-            return <VentasPanel data={ventas}></VentasPanel>
+            return <VentasPanel data={ventas} onChange={handleChangeVentas}></VentasPanel>
         }else if(show==="Calendario"){
             return <CalendarPanel></CalendarPanel>
         }

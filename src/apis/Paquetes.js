@@ -22,7 +22,7 @@ async function getProductosPaquete(body){
 }
 
 async function deletePaquete(body){
-  return await axios.delete("https://strength-club-sprint1.herokuapp.com/paquete",{data:body},{ headers: authHeader() });
+  return await axios.delete("https://strength-club-sprint1.herokuapp.com/paquete",{headers: authHeader(),data:body});
 }
 
 async function actualizarPaquete(body){

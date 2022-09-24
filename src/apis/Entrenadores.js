@@ -22,7 +22,7 @@ async function actualizarEntrenador(body){
 }
 
 async function deleteEntrenador(body){
-  return await axios.delete("https://strength-club-sprint1.herokuapp.com/entrenadores",{data:body},{ headers: authHeader() });
+  return await axios.delete("https://strength-club-sprint1.herokuapp.com/entrenadores",{headers: authHeader(),data:body});
 }
 
 export {getEntrenadores,crearEntrenador,deleteEntrenador,actualizarEntrenador};
