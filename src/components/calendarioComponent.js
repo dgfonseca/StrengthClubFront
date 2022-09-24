@@ -726,14 +726,14 @@ function parseProductos(){
                 </Row>
                 <Row style={{padding:"1%",backgroundImage:"linear-gradient(to right, lightgrey, grey,lightgrey)"}}>
                     <Col className="col-sm" >
-                        <Form.Group controlId="formFile" className="mb-3" style={{width:"40%", marginLeft:"30%"}}>
-                            <Form.Control type="file" onChange={(e)=>readIcs(e)}/>
-                        </Form.Group>
                         <Form.Group>
                             <Form.Label style={{color:"black"}}>Fecha Inicio</Form.Label>
                             <DatePicker onChange={value=>setFechaInicio(value)} value={fechaInicio} />
                             <Form.Label style={{color:"black"}}>Fecha Fin</Form.Label>
                             <DatePicker onChange={value=>setFechaFin(value)} value={fechaFin} />
+                        </Form.Group>
+                        <Form.Group controlId="formFile" className="mb-3" style={{width:"40%", marginLeft:"30%"}}>
+                            <Form.Control type="file" onChange={(e)=>readIcs(e)}/>
                         </Form.Group>
                         <Button variant="dark" onClick={handleUploadIcs}>Cargar Data</Button>
                     </Col>
