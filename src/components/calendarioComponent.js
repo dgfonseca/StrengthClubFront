@@ -98,21 +98,23 @@ export default function CalendarPanel(){
                 if(fechaInicio&&fechaFin){
                     if(input>=fechaInicio && input<=fechaFin){
                         var cliente = element.summary;
+                        console.log(element)
                         icsDataSesion.push({
                             cliente:cliente.value,
                             entrenador:entrenador,
                             fecha:element.dtstart.value,
-                            descripcion:element.description.value
+                            descripcion:element.summary.value
                         })
                     }
                 }else{
                     if((now.isoWeek() === input.isoWeek())&&now.year()===input.year()){
                         var cliente = element.summary;
+                        console.log(element)
                         icsDataSesion.push({
                             cliente:cliente.value,
                             entrenador:entrenador,
                             fecha:element.dtstart.value,
-                            descripcion:element.description.value
+                            descripcion:element.summary.value
                         })
                     }
                 }
