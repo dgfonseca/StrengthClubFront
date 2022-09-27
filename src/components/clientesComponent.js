@@ -45,6 +45,7 @@ const handleClose = () => {
     setFechaNacimiento("")
     setContenidoVenta([])
     setAnticipado(true)
+    setVentas([])
     setShow(false)};
 const handleShow = () => setShow(true);
 
