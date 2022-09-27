@@ -45,7 +45,6 @@ export default function CalendarPanel(){
     const[success, setSuccess]=useState("Sesion Creada/Modificada Exitosamente");
 
     const[icsData,setIcsData]=useState([]);
-    const[failedEventsIcs, setFailedEventsIcs]=useState([]);
 
     const [filteredEvents, setFilteredEvents]=useState([])
     const [searchValue, setSearchValue] = useState('');
@@ -209,45 +208,66 @@ export default function CalendarPanel(){
 
     const handleUploadIcs=async ()=>{
         let arr = []
-        icsData.forEach(element => {
-             crearSesionIcs({
-                cliente:element.cliente,
-                entrenador:element.entrenador,
-                fecha:parseDate2(element.fecha),
-                asistio:true
-              }).then(response=>{
-                  setValidated(false);
-                if(response.request.status===200){
-                    setShow3(true)
-                    parseSesiones()
-                  }else{
-                    arr.push({
-                        descripcion:element.descripcion
-                    });
-                  }
-              }).catch(error=>{
+        for(let element of icsData){
+            try {
+                await  crearSesionIcs({
+                        cliente:element.cliente,
+                        entrenador:element.entrenador,
+                        fecha:parseDate2(element.fecha),
+                        asistio:true
+                        })
+                setValidated(false);
+            } catch (error) {
                 if(error.response.status===401){
                     localStorage.removeItem("token")
                     navigate("/")
                 }else{
                     setValidated(false);
                     arr.push({
-                    descripcion:element.descripcion
-                });
+                    descripcion:error.response.data.message
+                    })
                 }
-              })
-        });
+            }
+        }
+        // for(let element of icsData){
+        //     crearSesionIcs({
+        //         cliente:element.cliente,
+        //         entrenador:element.entrenador,
+        //         fecha:parseDate2(element.fecha),
+        //         asistio:true
+        //       }).then(response=>{
+        //           setValidated(false);
+        //         if(response.request.status===200){
+        //             parseSesiones()
+        //           }else{
+        //             arr.push({
+        //                 descripcion:element.descripcion
+        //             });
+        //           }
+        //       }).catch(error=>{
+        //         if(error.response.status===401){
+        //             localStorage.removeItem("token")
+        //             navigate("/")
+        //         }else{
+        //             setValidated(false);
+        //             arr.push({
+        //             descripcion:error.response.data.message
+        //         });
+        //         }
+        //       })
+        // }
         setIcsData([])
-        await delay(1000);
-        setFailedEventsIcs(arr)
-        if(failedEventsIcs.length!==0){
+        if(arr.length!==0){
             let errors = "Los eventos con la siguiente descripción no se cargaron correctamente:"
-            failedEventsIcs.forEach(element => {
+            for(let element of arr){
                 errors=errors.concat(" "+element.descripcion+",")
-            });
+            }
             setError(errors);
             setShow2(true);
+        }else{
+            setShow3(true)
         }
+        parseSesiones()
     }
     const handleDeleteSesion=()=>{
         desagendarSesion({
@@ -375,7 +395,7 @@ export default function CalendarPanel(){
             <Container>
                 <Row style={{padding:"1%",backgroundImage:"linear-gradient(to right, lightgrey, grey,lightgrey)"}}>
                     <Col className="col-sm">
-                        <Alert show={show2} variant="danger" onClose={() => {setShow2(false);setError("");setValidated(false);setFailedEventsIcs([]);}} dismissible>
+                        <Alert show={show2} variant="danger" onClose={() => {setShow2(false);setError("");setValidated(false);}} dismissible>
                             <Alert.Heading>Error</Alert.Heading>
                             <p>
                             {error}
