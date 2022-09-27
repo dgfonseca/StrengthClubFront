@@ -3,7 +3,8 @@ import '../../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import { Container,Row,Col } from 'react-bootstrap';
 import { Modal,Button,Form,Alert } from "react-bootstrap";
 import { Calendar, momentLocalizer } from 'react-big-calendar'
-import moment from "moment";
+import moment from 'moment'
+import 'moment-timezone'
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import Select from 'react-select'
 import  {getClientes} from "../apis/Clientes";
@@ -15,9 +16,7 @@ import ical from "cal-parser";
 import { useNavigate } from "react-router-dom";
 
 
-
-
-
+moment.tz.setDefault("America/Bogota");
 const localizer = momentLocalizer(moment);
 
 export default function CalendarPanel(){
@@ -75,6 +74,8 @@ export default function CalendarPanel(){
             let entrenador = json.calendarData['x-wr-calname'];
             json.events.forEach(element => {
                 var input = moment(element.dtstart.value);
+                console.log(input)
+                console.log(element.dtstart)
                 if(fechaInicio&&fechaFin){
                     if(input>=fechaInicio && input<=fechaFin){
                         let cliente = element.summary;
