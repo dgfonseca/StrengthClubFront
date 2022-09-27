@@ -19,18 +19,24 @@ function App() {
   return (
     <Router>
       <div className="App" style={{ backgroundImage: `url("https://i.ibb.co/zQ3qGzK/icono-removebg-preview.png")`, backgroundRepeat: "no-repeat", backgroundPositionY: "60%", backgroundPositionX: "50%", backgroundSize:"80% 80%"}}>
-        <Container fluid style={{margin:"0px", marginRight:"0px"}}>
+        <Container fluid>
           <Row>
-            <Navbar className="navbar navbar-expand-lg navbar-dark">
+            <Navbar className="navbar navbar-expand-lg navbar-dark" collapseOnSelect>
               <Link className="navbar-brand" to={'/home'}>
                 Strength Club
               </Link>
-              { token!=="" ?
+              { token!==""&&token!==null && token!==undefined ?
                 (
-                <Nav className="me-auto" variant="dark">
-                  <Nav.Link href='/admin'>Administrador</Nav.Link>
-                  <Nav.Link href='/contabilidad'>Contabilidad</Nav.Link>
-                </Nav>):(
+                <Navbar.Collapse id="responsive-navbar-nav">
+                  <Nav className="me-auto" variant="dark">
+                    <Nav.Link href='/admin'>Administrador</Nav.Link>
+                    <Nav.Link href='/contabilidad'>Contabilidad</Nav.Link>
+                  </Nav>
+                  <Nav>
+                    <Nav.Link className="justify-content-end" href='/' onClick={()=>{localStorage.removeItem("token");setToken(null);}}>Logout</Nav.Link>
+                  </Nav>
+                </Navbar.Collapse>
+                ):(
                 <Nav className="me-auto" variant="dark">
                   <Nav.Link href='/'>Login</Nav.Link>
                 </Nav>)

@@ -27,12 +27,15 @@ async function notificarClientesCorreo(){
 async function getClientes(){
     return await axios.get("https://strength-club-sprint1.herokuapp.com/clientes",{ headers: authHeader() });
 }
+
+async function getAbonos(){
+    return await axios.get("https://strength-club-sprint1.herokuapp.com/abonos",{ headers: authHeader() });
+}
 async function getContabilidadClientes(body){
   return await axios.post("https://strength-club-sprint1.herokuapp.com/contabilidadClientes",body,{ headers: authHeader() });
 }
 
 async function actualizarCliente(body){
-  console.log(body)
   return await axios.put("https://strength-club-sprint1.herokuapp.com/clientes",body,{ headers: authHeader() });
 }
 
@@ -40,4 +43,8 @@ async function deleteCliente(body){
   return await axios.delete("https://strength-club-sprint1.herokuapp.com/clientes",{headers: authHeader(),data:body});
 }
 
-export {getClientes, crearCliente,actualizarCliente,deleteCliente,getVentasCliente,getContabilidadClientes,notificarClienteCorreo,notificarClientesCorreo}
+async function borrarAbono(body){
+  return await axios.delete("https://strength-club-sprint1.herokuapp.com/abono",{headers: authHeader(),data:body});
+}
+
+export {getClientes, crearCliente,actualizarCliente,deleteCliente,getVentasCliente,getContabilidadClientes,notificarClienteCorreo,notificarClientesCorreo,getAbonos,borrarAbono}

@@ -50,13 +50,15 @@ export default function HomePane(props){
     const [abono,setAbono]= useState(0);
     const[error, setError]=useState();
     const[success, setSuccess]=useState("Sesion Creada/Modificada Exitosamente");
+    const [pago, setPago]=useState(false);
+    const [tipo, setTipo]=useState("SUPLEMENTO");
 
 
 
     
     const handleClose = () => {setShow(false);setAbono(0);setCliente("")}
-    const handleClose4 = () => {setShow4(false);setCliente("");setAbono(0);setFecha(null);setHora(null)}
-    const handleCloseVenta = () => {setShowVenta(false);setProductosSeleccionados([]);setPaquetesSeleccionados([]);setCantidad(1);setPrecioCalculado(0)};
+    const handleClose4 = () => {setShow4(false);setCliente("");setAbono(0);setFecha(null);setHora(null);setTipo("SUPLEMENTO")}
+    const handleCloseVenta = () => {setShowVenta(false);setProductosSeleccionados([]);setPaquetesSeleccionados([]);setCantidad(1);setPrecioCalculado(0);setPago(false)};
     const handleShow = () => {setShow(true);parseClientes();parseEntrenadores();}; 
     const handleShow4 = () =>{setShow4(true);parseClientes()}
     const handleShowVenta = () => {setShowVenta(true);parseClientes();parseProductos();parsePaquetes();}; 
@@ -221,7 +223,8 @@ function parseProductos(){
                 registrarAbono({
                     cliente:cliente.value,
                     abono:abono,
-                    fecha:date
+                    fecha:date,
+                    tipo:tipo
                 }).then(async response=>{
                     setValidated(false);
                 if(response.request.status===200){
@@ -266,8 +269,22 @@ function parseProductos(){
             }).then(response=>{
                 setValidated(false);
               if(response.request.status===200){
-                  setSuccess("Venta registrada correctamente")
-                  setShow3(true)
+                  if(pago){
+                    registrarAbono({
+                        cliente:cliente.value,
+                        abono:precioCalculado
+                    }).then(response=>{
+                        setSuccess("Venta con pago registrada correctamente")
+                        setShow3(true)
+                    }).catch(error=>{
+                        setValidated(false);
+                        setError("No se pudo registrar el abono asociado al pago de la venta, por favor registre manualmente el abono");
+                        setShow2(true)
+                    })
+                  }else{
+                    setSuccess("Venta registrada correctamente")
+                    setShow3(true)
+                  }
                 }else{
                     setError("No se pudo registrar la venta: Verifique la información ingresada");
                     setShow2(true)
@@ -281,9 +298,10 @@ function parseProductos(){
                     setError(error.response.data.message);
                     setShow2(true)
                 }
+              }).finally(()=>{
+                  handleCloseVenta()
               })
         }
-        handleCloseVenta()
     }
 
     const handleSubmit = (event) => {
@@ -385,6 +403,18 @@ function parseProductos(){
                                         <Form.Label style={{color:"black"}}>Fecha</Form.Label>
                                         <DatePicker onChange={value=>setFecha(value)} value={fecha} />
                                         <TimePicker onChange={value=>setHora(value)} value={hora} />
+                                    </Form.Group>
+                                    <Form.Group className="mb-3" controlId="formBasicRol">
+                                        <Form.Label style={{color:"black"}}>Seleccione Tipo de Abono</Form.Label>
+                                        <Form.Control as="select"
+                                                onChange={e=>setTipo(e.target.value)}
+                                                defaultValue={tipo}
+                                                required
+                                                >
+                                                <option>Seleccione Un Tipo</option>
+                                                <option value="SUPLEMENTO">Suplemento</option>
+                                                <option value="SESION">Sesion</option>                          
+                                        </Form.Control>   
                                     </Form.Group>
                                 </Form>
                             </Modal.Body>
@@ -511,6 +541,13 @@ function parseProductos(){
                                             <InputGroup.Text>$</InputGroup.Text>
                                             <InputGroup.Text>Precio: $ {precioCalculado}</InputGroup.Text>
                                         </InputGroup>
+                                    </Form.Group>
+                                    <Form.Group className="mb-3">
+                                        <Form.Label style={{color:"black"}}>Pago:</Form.Label>
+                                        <Form.Check
+                                        defaultChecked={pago}
+                                        onChange={event=>setPago(event.target.checked)}
+                                        />
                                     </Form.Group> 
                                 </Form>
                             </Modal.Body>

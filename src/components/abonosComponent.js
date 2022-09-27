@@ -1,21 +1,20 @@
 import React,{useState, useMemo} from "react";
-import { Row,Modal,Button,Form,Alert,ListGroup} from "react-bootstrap";
+import { Row,Modal,Button,Form,Alert} from "react-bootstrap";
 import '../index.css';
 import { useTable, useFilters, useSortBy } from "react-table";
-import { borrarVenta, getContenidoVentas, getVentas } from "../apis/Ventas";
+import { borrarAbono, getAbonos } from "../apis/Clientes";
 import { useNavigate } from "react-router-dom";
 
 
-export default function VentasPanel({data,onChange}){
+export default function AbonosPanel({data,onChange}){
 const navigate = useNavigate();
 
 const [id, setId] = useState();
 const [fecha, setFecha]=useState();
-const [cedula, setCedula]=useState();
 const [error, setError]=useState();
 const [nombre, setNombre]=useState();
 const [precio, setPrecio]=useState();
-const [contenido, setContenido]=useState([]);
+const [tipo, setTipo]=useState();
 
 const [show, setShow] = useState(false);
 const [show2, setShow2] = useState(false);
@@ -29,33 +28,19 @@ const handleClose = () => {
     setId("")
     setFecha("")
     setPrecio("")
-    setCedula("")
-    setContenido([])
+    setTipo("")
     setShow(false)};
 
 const handleShow = () => setShow(true);
 
 const handleShowDeleteVenta = e =>{
-        getContenidoVentas({id:e.cells[0].value}).then(result=>{
             setButtonName("Borrar")
             setId(e.cells[0].value);
-            setCedula(e.cells[1].value)
-            setNombre(e.cells[2].value)
-            setFecha(e.cells[3].value)
-            setPrecio(e.cells[4].value)
-            setContenido(result.data.contenido)
+            setNombre(e.cells[1].value)
+            setFecha(e.cells[2].value)
+            setPrecio(e.cells[3].value)
+            setTipo(e.cells[5].value)
             handleShow();
-        }).catch(error=>{
-            if(error.response.status===401){
-                localStorage.removeItem("token")
-               navigate("/")
-            }else{
-                setValidated(false);
-                setError("No se pudo obtener la informacion de la venta");
-                setShow2(true)
-            }
-          })
-        
 }
 
 const [filterInput, setFilterInput] = useState("");
@@ -67,18 +52,14 @@ const handleFilterChange = e => {
 };
 const columns = useMemo(()=>[
     {
-    Header: "Ventas",
+    Header: "Abonos",
     columns:[
         {
             Header: "Id",
             accessor: "id"
         },
         {
-            Header: "Cedula",
-            accessor: "cedula"
-        },
-        {
-            Header: "Nombre",
+            Header: "Cliente",
             accessor: "nombre"
         },
         {
@@ -92,6 +73,10 @@ const columns = useMemo(()=>[
         {
             Header: "Usuario",
             accessor: "usuario"
+        },
+        {
+            Header: "Tipo",
+            accessor: "tipo"
         }
     ],
 }],[]);
@@ -112,18 +97,18 @@ const {
 
 const handleSubmit = (event) => {
             setValidated(true);
-            borrarVenta({
+            borrarAbono({
                 id:id,
               }).then(response=>{
                   setValidated(false);
                 if(response.request.status===200){
                     setShow3(true)
                     setSuccess("borrado")
-                    getVentas().then(response=>{
-                        onChange(response.data.ventas)
+                    getAbonos().then(response=>{
+                        onChange(response.data.abonos)
                     })
                   }else{
-                      setError("No se pudo borrar la venta: Verifique la información ingresada");
+                      setError("No se pudo borrar el abono: Verifique la información ingresada");
                       setShow2(true)
                   }
               }).catch(error=>{
@@ -132,7 +117,7 @@ const handleSubmit = (event) => {
                    navigate("/")
                 }else{
                     setValidated(false);
-                    setError("No se pudo borrar la venta: Verifique la información ingresada");
+                    setError("No se pudo borrar el abono: Verifique la información ingresada");
                     setShow2(true)
                 }
               })
@@ -178,7 +163,7 @@ const handleSubmit = (event) => {
             </table>
             <Modal show={show} onHide={handleClose} backdrop="static" keyboard={false}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Venta</Modal.Title>
+                    <Modal.Title>Abono</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Form noValidate validated={validated} onSubmit={handleSubmit}>
@@ -186,45 +171,22 @@ const handleSubmit = (event) => {
                             <Form.Label style={{color:"black"}}>Id</Form.Label>
                             <Form.Control required type="textarea"  disabled defaultValue={id} placeholder="Id"/>
                         </Form.Group>
-
-
-                        <Form.Group className="mb-3" controlId="formBasicEmail">
-                            <Form.Label style={{color:"black"}}>Cedula</Form.Label>
-                            <Form.Control required type="email" disabled  defaultValue={cedula} placeholder="Cedula"/>
-                        </Form.Group>
-
                         <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea2">
                             <Form.Label style={{color:"black"}}>Nombre</Form.Label>
                             <Form.Control required type="textarea" disabled  defaultValue={nombre} placeholder="Nombre"/>
                         </Form.Group>
-
+                        <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea2">
+                            <Form.Label style={{color:"black"}}>Tipo</Form.Label>
+                            <Form.Control required type="textarea" disabled  defaultValue={tipo} placeholder="Nombre"/>
+                        </Form.Group>
                         <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea2">
                             <Form.Label style={{color:"black"}}>Fecha</Form.Label>
                             <Form.Control required type="textarea"  disabled defaultValue={fecha} placeholder="Fecha"/>
                         </Form.Group>
-
                         <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea2">
                             <Form.Label style={{color:"black"}}>Precio</Form.Label>
                             <Form.Control required type="textarea" disabled defaultValue={precio} placeholder="Precio"/>
                         </Form.Group> 
-                        <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea2">
-                                <Form.Label style={{color:"black"}}>Contenido</Form.Label>
-                                <ListGroup>
-                                    {
-                                        
-                                        contenido.map((item,index)=>(
-
-                                            <ListGroup.Item action href={'#' + index}>
-                                                Codigo: {item.codigo}
-                                                <br></br>
-                                                Nombre: {item.nombre}        
-                                                <br></br>
-                                                Cantidad: {item.cantidad}
-                                            </ListGroup.Item>
-                                        ))
-                                    }
-                                </ListGroup>
-                        </Form.Group>
                     </Form>
                     
                 </Modal.Body>
@@ -242,9 +204,9 @@ const handleSubmit = (event) => {
                 </p>
             </Alert>
             <Alert show={show3} variant="success" onClose={() => {setShow3(false);setError("");setValidated(false)}} dismissible>
-                <Alert.Heading>Venta {success}</Alert.Heading>
+                <Alert.Heading>Abono {success}</Alert.Heading>
                 <p>
-                Venta {success} Exitosamente
+                Abono {success} Exitosamente
                 </p>
             </Alert>
         </Row>

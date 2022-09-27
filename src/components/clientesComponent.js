@@ -164,7 +164,6 @@ const handleSubmit = (event) => {
                     localStorage.removeItem("token")
                    navigate("/")
                 }else{
-                    console.log(error)
                     setValidated(false);
                     setError("No se pudo crear el cliente: Verifique la información ingresada");
                     setShow2(true)

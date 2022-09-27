@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import '../../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import { Container,Row,Col } from 'react-bootstrap';
-import { ListGroup,Modal,Button,Form,Alert, InputGroup } from "react-bootstrap";
+import { Modal,Button,Form,Alert } from "react-bootstrap";
 import { Calendar, momentLocalizer } from 'react-big-calendar'
 import moment from "moment";
 import 'react-big-calendar/lib/css/react-big-calendar.css';
@@ -9,11 +9,8 @@ import Select from 'react-select'
 import  {getClientes} from "../apis/Clientes";
 import  {getSesiones,crearSesion,registrarAsistencia,desagendarSesion, crearSesionIcs} from "../apis/Sesiones"
 import {getEntrenadores} from "../apis/Entrenadores"
-import {getProductosHabilitados} from "../apis/Productos";
 import TimePicker from 'react-time-picker';
 import DatePicker from 'react-date-picker';
-import { registrarVenta } from "../apis/Ventas";
-import {getPaquetes} from "../apis/Paquetes"
 import ical from "cal-parser";
 import { useNavigate } from "react-router-dom";
 
@@ -37,23 +34,9 @@ export default function CalendarPanel(){
     const [clientes,setClientes]=useState([]);
     const [entrenadores,setEntrenadores]=useState([]);
     const [sesiones, setSesiones]=useState(parseSesiones)
-    const [productos, setProductos] = useState([]);
-    const [paquetes, setPaquetes]= useState([]);
     const [sesion,setSesion]=useState({sesion:{}});
-    const [productosSeleccionados, setProductosSeleccionados] = useState([]);
-    const [productoSeleccionado, setProductoSeleccionado] = useState();
-    const [paqueteSeleccionado, setPaqueteSeleccionado] = useState();
-    const [paquetesSeleccionados, setPaquetesSeleccionados] = useState([]);
-    const [productoCarritoSeleccionado, setProductoCarritoSeleccionado] = useState();
-    const [paqueteCarritoSeleccionado, setPaqueteCarritoSeleccionado] = useState();
-    const [cantidad, setCantidad] = useState(1);
-    const [cantidadPaquete, setCantidadPaquete] = useState(1);
 
-    const [precioCalculado,setPrecioCalculado]=useState(0);
 
-    const [showProductosCarrito, setShowProductosCarrito] = useState(false);
-    const [showPaquetesCarrito, setShowPaquetesCarrito] = useState(false);
-    const [showVenta, setShowVenta]=useState();
     const [show, setShow]=useState();
     const [show2, setShow2] = useState(false);
     const [show3, setShow3] = useState(false);
@@ -78,10 +61,8 @@ export default function CalendarPanel(){
     }
 
     const handleClose = () => setShow(false);
-    const handleCloseVenta = () => {setShowVenta(false);setProductosSeleccionados([]);setPaquetesSeleccionados([]);setCantidad(1);setPrecioCalculado(0)};
     const handleClose4 = () => setShow4(false);
     const handleShow = () => {setShow(true);parseClientes();parseEntrenadores();}; 
-    const handleShowVenta = () => {setShowVenta(true);parseClientes();parseProductos();parsePaquetes();}; 
     const [validated, setValidated] = useState(false);
 
 
@@ -97,8 +78,7 @@ export default function CalendarPanel(){
                 var input = moment(element.dtstart.value);
                 if(fechaInicio&&fechaFin){
                     if(input>=fechaInicio && input<=fechaFin){
-                        var cliente = element.summary;
-                        console.log(element)
+                        let cliente = element.summary;
                         icsDataSesion.push({
                             cliente:cliente.value,
                             entrenador:entrenador,
@@ -108,8 +88,7 @@ export default function CalendarPanel(){
                     }
                 }else{
                     if((now.isoWeek() === input.isoWeek())&&now.year()===input.year()){
-                        var cliente = element.summary;
-                        console.log(element)
+                        let cliente = element.summary;
                         icsDataSesion.push({
                             cliente:cliente.value,
                             entrenador:entrenador,
@@ -123,101 +102,12 @@ export default function CalendarPanel(){
         };
         reader.readAsText(e.target.files[0])
     }
-    function handleShowProductosCarrito(){
-        if(showProductosCarrito){
-            setShowProductosCarrito(false);
-        }else{
-            setShowProductosCarrito(true);
-        }
-    
-    }
 
-    function handleShowPaquetesCarrito(){
-        if(showPaquetesCarrito){
-            setShowPaquetesCarrito(false);
-        }else{
-            setShowPaquetesCarrito(true);
-        }
-    
-    }
-    
-    function eliminarProductoCarrito(){
-        if(productoCarritoSeleccionado.item){
-            setProductosSeleccionados(productosSeleccionados.filter((_,i)=>i!==productoCarritoSeleccionado.index));
-            setPrecioCalculado(precioCalculado-(productoCarritoSeleccionado.item.precio*productoCarritoSeleccionado.item.cantidad))
-            setProductoCarritoSeleccionado({item:null,index:null})
-        }
-        if(isNaN(precioCalculado)){
-            setPrecioCalculado(0)
-        }
-    }
-
-    function eliminarPaqueteCarrito(){
-        if(paqueteCarritoSeleccionado.item){
-            setPaquetesSeleccionados(paquetesSeleccionados.filter((_,i)=>i!==paqueteCarritoSeleccionado.index));
-            setPrecioCalculado(precioCalculado-(paqueteCarritoSeleccionado.item.precio*paqueteCarritoSeleccionado.item.cantidad))
-            setPaqueteCarritoSeleccionado({item:null,index:null})
-        }
-        if(isNaN(precioCalculado)){
-            setPrecioCalculado(0)
-        }
-    }
-    function agregarProducto(){
-        setProductosSeleccionados([...productosSeleccionados,{
-            nombre:productoSeleccionado.label,
-            codigo:productoSeleccionado.value,
-            precio:productoSeleccionado.precio,
-            cantidad:cantidad
-        }]);
-        setPrecioCalculado(precioCalculado+(productoSeleccionado.precio*cantidad))
-    }
-
-    function agregarPaquete(){
-        setPaquetesSeleccionados([...paquetesSeleccionados,{
-            nombre:paqueteSeleccionado.label,
-            codigo:paqueteSeleccionado.value,
-            precio:paqueteSeleccionado.precio,
-            cantidad:cantidadPaquete
-        }]);
-        setPrecioCalculado(precioCalculado+(paqueteSeleccionado.precio*cantidad))
-    }
     const handleEventClick = (event)=>{
         setSesion(event.sesion)
         setShow4(true)
-};
+    };
 
-function parsePaquetes(){
-    let arrPaquetes=[];
-    getPaquetes().then(result=>{
-        result.data.paquetes.forEach(element=>{
-            arrPaquetes.push(
-                { value: element.codigo, label: element.nombre, precio:element.precio}
-            )
-        })
-        setPaquetes(arrPaquetes)
-    }).catch(error=>{
-        if(error.response.status===401){
-            localStorage.removeItem("token")
-            navigate("/")
-        }
-    })
-}
-function parseProductos(){
-    let arrProductos = [];
-    getProductosHabilitados().then(result=>{
-        result.data.productos.forEach(element=>{
-            arrProductos.push(
-                { value: element.codigo, label: element.nombre, precio:element.precio}
-            )
-        })
-        setProductos(arrProductos);
-    }).catch(error=>{
-        if(error.response.status===401){
-            localStorage.removeItem("token")
-            navigate("/")
-        }
-    })
-}
     function parseDate(date){
          date = date.toString().split(" ");
          let arrHour = date[1];
@@ -423,36 +313,6 @@ function parseProductos(){
 
     };
 
-    const handleSubmitRegistrarVenta = ()=>{
-        if(cliente&&productosSeleccionados&&paquetesSeleccionados){
-            registrarVenta({
-                cliente:cliente.value,
-                productos:productosSeleccionados,
-                paquetes:paquetesSeleccionados,
-                valor:precioCalculado
-            }).then(response=>{
-                setValidated(false);
-              if(response.request.status===200){
-                  setSuccess("Venta registrada correctamente")
-                  setShow3(true)
-                }else{
-                    setError("No se pudo registrar la venta: Verifique la información ingresada");
-                    setShow2(true)
-                }
-            }).catch(error=>{
-                if(error.response.status===401){
-                    localStorage.removeItem("token")
-                    navigate("/")
-                }else{
-                    setValidated(false);
-                    setError(error.response.data.message);
-                    setShow2(true)
-                }
-              })
-        }
-        handleCloseVenta()
-    }
-
     const handleSubmit = (event) => {
         const form = event.currentTarget;
         if (form.checkValidity() === false) {
@@ -630,101 +490,6 @@ function parseProductos(){
                             </Modal.Footer>
                         </Modal>
                     </Col>
-                    <Col className="col-sm">
-                        <button type="button" onClick={handleShowVenta} style={{margin:"2%",width:"40%"}} className="btn btn-dark">Registrar Venta</button>
-                        <Modal show={showVenta} onHide={handleCloseVenta} backdrop="static" keyboard={false}>
-                            <Modal.Header closeButton>
-                                <Modal.Title>Registrar Venta</Modal.Title>
-                            </Modal.Header>
-                            <Modal.Body>
-                                <Form noValidate validated={validated} onSubmit={handleSubmit}>
-                                    <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea2">
-                                        <Form.Label style={{color:"black"}}>Cliente</Form.Label>
-                                        <Select options={clientes} onChange={value=>setCliente(value)}></Select>
-                                    </Form.Group>
-                                    <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
-                                        <Form.Label style={{color:"black"}}>Producto</Form.Label>
-                                        <Select options={productos} onChange={value=>setProductoSeleccionado(value)}></Select>
-                                        <Form.Label style={{color:"black"}}>Cantidad</Form.Label>
-                                        <Form.Control required type="number" placeholder="Cantidad"  onChange={e=>setCantidad(e.target.value)}/>
-                                        <Container>
-                                            <Row className="justify-content-md-center">
-                                                <Col>
-                                                    <button type="button" onClick={agregarProducto} style={{margin:"3%",width:"80%", marginLeft:"20%"}} className="btn btn-dark">Agregar Producto</button>
-                                                </Col>
-                                                <Col>
-                                                    <button type="button" onClick={handleShowProductosCarrito} style={{margin:"3%",width:"80%"}} className="btn btn-dark">Ver Productos</button>
-                                                </Col>
-                                            </Row>
-                                        </Container>
-                                        <ListGroup hidden={showProductosCarrito}>
-                                            {
-                                                
-                                                productosSeleccionados.map((item,index)=>(
-
-                                                    <ListGroup.Item action href={'#producto' + index} style={{backgroundColor:"lightgray"}}
-                                                    onClick={()=>setProductoCarritoSeleccionado({item:item,index:index})}>
-                                                        Nombre: {item.nombre}        
-                                                        <br></br>
-                                                        Cantidad: {item.cantidad}
-                                                    </ListGroup.Item>
-                                                ))
-                                            }
-                                        <button type="button" onClick={eliminarProductoCarrito} style={{margin:"3%",width:"80%", marginLeft:"11%"}} className="btn btn-dark">Eliminar Producto del Carrito</button>
-                                        </ListGroup>
-
-                                    </Form.Group>
-                                    <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
-                                        <Form.Label style={{color:"black"}}>Paquete</Form.Label>
-                                        <Select options={paquetes} onChange={value=>setPaqueteSeleccionado(value)}></Select>
-                                        <Form.Label style={{color:"black"}}>Cantidad</Form.Label>
-                                        <Form.Control required type="number" placeholder="Cantidad"  onChange={e=>setCantidadPaquete(e.target.value)}/>
-                                        <Container>
-                                            <Row className="justify-content-md-center">
-                                                <Col>
-                                                    <button type="button" onClick={agregarPaquete} style={{margin:"3%",width:"80%", marginLeft:"20%"}} className="btn btn-dark">Agregar Paquete</button>
-                                                </Col>
-                                                <Col>
-                                                    <button type="button" onClick={handleShowPaquetesCarrito} style={{margin:"3%",width:"80%"}} className="btn btn-dark">Ver Paquetes</button>
-                                                </Col>
-                                            </Row>
-                                        </Container>
-                                        <ListGroup hidden={showPaquetesCarrito}>
-                                            {
-                                                
-                                                paquetesSeleccionados.map((item,index)=>(
-
-                                                    <ListGroup.Item action href={'#paquete' + index} style={{backgroundColor:"lightgray"}}
-                                                    onClick={()=>setPaqueteCarritoSeleccionado({item:item,index:index})}>
-                                                        Nombre: {item.nombre}        
-                                                        <br></br>
-                                                        Cantidad: {item.cantidad}
-                                                    </ListGroup.Item>
-                                                ))
-                                            }
-                                        <button type="button" onClick={eliminarPaqueteCarrito} style={{margin:"3%",width:"80%", marginLeft:"11%"}} className="btn btn-dark">Eliminar Paquete del Carrito</button>
-                                        </ListGroup>
-
-                                    </Form.Group>
-                                    <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea2">
-                                        <Form.Label style={{color:"black"}}>Precio</Form.Label>
-                                        <InputGroup className="mb-3">
-                                            <InputGroup.Text>$</InputGroup.Text>
-                                            <InputGroup.Text>Precio: $ {precioCalculado}</InputGroup.Text>
-                                        </InputGroup>
-                                    </Form.Group> 
-                                </Form>
-                            </Modal.Body>
-                            <Modal.Footer>
-                                <Button variant="secondary" onClick={handleCloseVenta}>
-                                    Cerrar
-                                </Button>
-                                <Button variant="primary" onClick={handleSubmitRegistrarVenta}>Registrar</Button>
-                            </Modal.Footer>
-                        </Modal>
-                    </Col>
-                </Row>
-                <Row>
                 </Row>
                 <Row style={{padding:"1%",backgroundImage:"linear-gradient(to right, lightgrey, grey,lightgrey)"}}>
                     <Col className="col-sm" >

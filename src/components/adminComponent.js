@@ -9,13 +9,14 @@ import PaquetesPanel from "./paquetesComponent";
 import VentasPanel from "./ventasComponent"
 import { getEntrenadores } from "../apis/Entrenadores";
 import { getProductos } from "../apis/Productos";
-import { getClientes } from "../apis/Clientes";
+import { getClientes,getAbonos } from "../apis/Clientes";
 import { getUsuarios } from "../apis/Users";
 import { getPaquetes } from "../apis/Paquetes";
 import { getVentas } from "../apis/Ventas";
 import CalendarPanel from "./calendarioComponent";
 import { useNavigate } from "react-router-dom";
 import { useCallback } from "react";
+import AbonosPanel from "./abonosComponent";
 
 
 
@@ -29,6 +30,7 @@ export default function AdminPane(props){
     const [usuarios, setUsuarios]=useState([]);
     const [paquetes, setPaquetes]=useState([]);
     const [ventas, setVentas]=useState([]);
+    const [abonos, setAbonos]=useState([])
 
     const handleChangeEntrenadores = useCallback((newValue) => {
         setEntrenadores(newValue);
@@ -48,6 +50,9 @@ export default function AdminPane(props){
     const handleChangeVentas = useCallback((newValue) => {
         setVentas(newValue);
      },[ventas]);
+    const handleChangeAbonos = useCallback((newValue) => {
+        setAbonos(newValue);
+     },[abonos]);
 
     const handleShowEntrenadores = async ()=>{
         try {
@@ -104,6 +109,17 @@ export default function AdminPane(props){
         }
     }
 
+    const handleShowAbonos = async ()=>{
+        try {
+            const ent = await getAbonos()
+            setAbonos(ent.data.abonos)
+            setShow("Abonos");
+        } catch (error) {
+            localStorage.removeItem("token")
+            navigate("/")
+        }
+    }
+
     const handleShowVentas = async ()=>{
         try {
             const ent = await getVentas()
@@ -134,6 +150,8 @@ export default function AdminPane(props){
             return <VentasPanel data={ventas} onChange={handleChangeVentas}></VentasPanel>
         }else if(show==="Calendario"){
             return <CalendarPanel></CalendarPanel>
+        }else if(show==="Abonos"){
+            return <AbonosPanel data={abonos} onChange={handleChangeAbonos}></AbonosPanel>
         }
     }
 
@@ -157,6 +175,9 @@ export default function AdminPane(props){
                     </Col>
                     <Col className="col-sm">
                         <button type="button" className="btn btn-dark" onClick={handleShowVentas}>Ventas</button>
+                    </Col>
+                    <Col className="col-sm">
+                        <button type="button" className="btn btn-dark" onClick={handleShowAbonos}>Abonos</button>
                     </Col>
                     <Col className="col-sm">
                         <button type="button" className="btn btn-dark" onClick={handleShowCalendario}>Calendario</button>
