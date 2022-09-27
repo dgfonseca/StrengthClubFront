@@ -272,7 +272,8 @@ function parseProductos(){
                   if(pago){
                     registrarAbono({
                         cliente:cliente.value,
-                        abono:precioCalculado
+                        abono:precioCalculado,
+                        tipo:"SUPLEMENTO"
                     }).then(response=>{
                         setSuccess("Venta con pago registrada correctamente")
                         setShow3(true)
