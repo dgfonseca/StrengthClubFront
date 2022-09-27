@@ -75,7 +75,8 @@ export default function CalendarPanel(){
             json.events.forEach(element => {
                 var input = moment(element.dtstart.value);
                 console.log(input)
-                console.log(element.dtstart)
+                console.log(now)
+                console.log(element.dtstart.value.toTimeString())
                 if(fechaInicio&&fechaFin){
                     if(input>=fechaInicio && input<=fechaFin){
                         let cliente = element.summary;
