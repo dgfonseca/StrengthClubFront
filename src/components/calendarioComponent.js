@@ -68,32 +68,33 @@ export default function CalendarPanel(){
             e.preventDefault()
             const reader = new FileReader()
             reader.onload = async (e) => { 
+
             const json = ical.parseString(e.target.result)
             var now = moment();
             let icsDataSesion=[]
             let entrenador = json.calendarData['x-wr-calname'];
             json.events.forEach(element => {
-                var input = moment(element.dtstart.value);
-                console.log(input)
-                console.log(now)
-                console.log(element.dtstart.value.toTimeString())
+                var input = new Date(element.dtstart.value)
+                input.setHours(input.getHours()+5)
                 if(fechaInicio&&fechaFin){
                     if(input>=fechaInicio && input<=fechaFin){
                         let cliente = element.summary;
                         icsDataSesion.push({
                             cliente:cliente.value,
                             entrenador:entrenador,
-                            fecha:element.dtstart.value,
+                            fecha:input,
                             descripcion:element.summary.value
                         })
                     }
-                }else{
-                    if((now.isoWeek() === input.isoWeek())&&now.year()===input.year()){
+                }
+                else{
+                    let input2=moment(input)
+                    if((now.isoWeek() === input2.isoWeek())&&now.year()===input2.year()){
                         let cliente = element.summary;
                         icsDataSesion.push({
                             cliente:cliente.value,
                             entrenador:entrenador,
-                            fecha:element.dtstart.value,
+                            fecha:input,
                             descripcion:element.summary.value
                         })
                     }
@@ -231,33 +232,6 @@ export default function CalendarPanel(){
                 }
             }
         }
-        // for(let element of icsData){
-        //     crearSesionIcs({
-        //         cliente:element.cliente,
-        //         entrenador:element.entrenador,
-        //         fecha:parseDate2(element.fecha),
-        //         asistio:true
-        //       }).then(response=>{
-        //           setValidated(false);
-        //         if(response.request.status===200){
-        //             parseSesiones()
-        //           }else{
-        //             arr.push({
-        //                 descripcion:element.descripcion
-        //             });
-        //           }
-        //       }).catch(error=>{
-        //         if(error.response.status===401){
-        //             localStorage.removeItem("token")
-        //             navigate("/")
-        //         }else{
-        //             setValidated(false);
-        //             arr.push({
-        //             descripcion:error.response.data.message
-        //         });
-        //         }
-        //       })
-        // }
         setIcsData([])
         if(arr.length!==0){
             let errors = "Los eventos con la siguiente descripción no se cargaron correctamente:"
