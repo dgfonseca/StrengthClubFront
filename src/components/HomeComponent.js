@@ -58,7 +58,8 @@ export default function HomePane(props){
     
     const handleClose = () => {setShow(false);setAbono(0);setCliente("")}
     const handleClose4 = () => {setShow4(false);setCliente("");setAbono(0);setFecha(null);setHora(null);setTipo("SUPLEMENTO")}
-    const handleCloseVenta = () => {setShowVenta(false);setProductosSeleccionados([]);setPaquetesSeleccionados([]);setCantidad(1);setPrecioCalculado(0);setPago(false)};
+    const handleCloseVenta = () => {setShowVenta(false);setProductosSeleccionados([]);
+        setPaquetesSeleccionados([]);setCantidad(1);setPrecioCalculado(0);setPago(false);setFecha(null);setHora(null)};
     const handleShow = () => {setShow(true);parseClientes();parseEntrenadores();}; 
     const handleShow4 = () =>{setShow4(true);parseClientes()}
     const handleShowVenta = () => {setShowVenta(true);parseClientes();parseProductos();parsePaquetes();}; 
@@ -260,12 +261,32 @@ function parseProductos(){
     }
 
     const handleSubmitRegistrarVenta = ()=>{
-        if(cliente&&productosSeleccionados&&paquetesSeleccionados){
+        if(cliente&&(productosSeleccionados.length>0 || paquetesSeleccionados.length>0)){
+            let date;
+            if(fecha&&hora){
+                let partsDate = fecha.toString().split(" ");
+                let months = {
+                    Jan: "01",
+                    Feb: "02",
+                    Mar: "03",
+                    Apr: "04",
+                    May: "05",
+                    Jun: "06",
+                    Jul: "07",
+                    Aug: "08",
+                    Sep: "09",
+                    Oct: "10",
+                    Nov: "11",
+                    Dec: "12"
+                };
+                date = partsDate[3]+"-"+months[partsDate[1]]+"-"+partsDate[2]+" "+hora
+            }
             registrarVenta({
                 cliente:cliente.value,
                 productos:productosSeleccionados,
                 paquetes:paquetesSeleccionados,
-                valor:precioCalculado
+                valor:precioCalculado,
+                fecha:date
             }).then(response=>{
                 setValidated(false);
               if(response.request.status===200){
@@ -302,6 +323,10 @@ function parseProductos(){
               }).finally(()=>{
                   handleCloseVenta()
               })
+        }else{
+            setError("No se pudo registrar la venta: Verifique que haya seleccionado un cliente y minimo un producto o paquete");
+            setShow2(true)
+            handleCloseVenta()
         }
     }
 
@@ -550,6 +575,11 @@ function parseProductos(){
                                         onChange={event=>setPago(event.target.checked)}
                                         />
                                     </Form.Group> 
+                                    <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea2">
+                                        <Form.Label style={{color:"black"}}>Fecha</Form.Label>
+                                        <DatePicker onChange={value=>setFecha(value)} value={fecha} />
+                                        <TimePicker onChange={value=>setHora(value)} value={hora} />
+                                    </Form.Group>
                                 </Form>
                             </Modal.Body>
                             <Modal.Footer>
