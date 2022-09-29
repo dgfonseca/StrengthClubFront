@@ -194,7 +194,7 @@ const handleSubmit = (event) => {
               }).catch(error=>{
                 if(error.response.status===401){
                     localStorage.removeItem("token")
-                   navigate("/")
+                    navigate("/")
                 }else{
                     setValidated(false);
                     setError("No se pudo crear el cliente: Verifique la información ingresada");
@@ -202,7 +202,6 @@ const handleSubmit = (event) => {
                 }
               })
         }
-        
         handleClose();
     }}
   };
@@ -325,7 +324,7 @@ function renderRow(props) {
                         </Form.Group> 
                         <Form.Group className="mb-3" controlId="exampleForm.ControlDatearea">
                             <Form.Label style={{color:"black"}}>Fecha Nacimiento</Form.Label>
-                            <Form.Control required type="date" defaultValue={fechaNacimiento} placeholder="Fecha" onChange={e=>setFechaNacimiento(e.target.value)}/>
+                            <Form.Control required type="date" defaultValue={fechaNacimiento} placeholder="Fecha" onChange={e=>{setFechaNacimiento(e.target.value)}}/>
                             <Form.Control.Feedback type="invalid">Ingrese la fecha de nacimiento.</Form.Control.Feedback>
                         </Form.Group>
                         <Form.Group className="mb-3">
