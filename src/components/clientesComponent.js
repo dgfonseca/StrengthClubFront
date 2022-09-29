@@ -31,6 +31,7 @@ const [show3, setShow3] = useState(false);
 const [validated, setValidated] = useState(false);
 const [buttonName, setButtonName] = useState("Crear");
 const [success, setSuccess]=useState();
+const [precioSesion, setPrecioSesion]=useState();
 
 const [ventas,setVentas] = useState([]);
 const [contenidoVenta, setContenidoVenta] = useState([]);
@@ -46,6 +47,7 @@ const handleClose = () => {
     setContenidoVenta([])
     setAnticipado(true)
     setVentas([])
+    setPrecioSesion(null)
     setShow(false)};
 const handleShow = () => setShow(true);
 
@@ -113,6 +115,10 @@ const columns = useMemo(()=>[
         {
             Header: "Pago",
             accessor: "anticipado"
+        },
+        {
+            Header: "Precio Sesion",
+            accessor: "precio_sesion"
         }
     ],
 }],[]);
@@ -147,7 +153,8 @@ const handleSubmit = (event) => {
                 telefono:telefono,
                 cedula:cedula,
                 fechaNacimiento:fechaNacimiento,
-                anticipado:anticipado
+                anticipado:anticipado,
+                precioSesion:precioSesion
               }).then(response=>{
                   setValidated(false);
                 if(response.request.status==200){
@@ -161,6 +168,7 @@ const handleSubmit = (event) => {
                       setShow2(true)
                   }
               }).catch(error=>{
+                console.log(error)
                 if(error.response.status===401){
                     localStorage.removeItem("token")
                    navigate("/")
@@ -280,6 +288,9 @@ function renderRow(props) {
                                     return <td>Vencido</td>;
                                 }
                             }
+                            if(cell.column.Header==="Precio Sesion" && (cell.value===null||cell.value===0||cell.value===undefined)){
+                                return <td>N/A</td>
+                            }
                             return <td {...cell.getCellProps()}>{cell.render("Cell")}</td>;
                         })}
                         </tr>
@@ -333,6 +344,11 @@ function renderRow(props) {
                                         defaultChecked={anticipado}
                                         onChange={event=>setAnticipado(event.target.checked)}
                                         />
+                        </Form.Group>
+                        <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea2">
+                                        <Form.Label style={{color:"black"}}>Precio Sesion</Form.Label>
+                                        <Form.Control required type="number" placeholder="Precio" defaultValue={0} onChange={e=>setPrecioSesion(e.target.value)}/>
+                                        <Form.Control.Feedback type="invalid">Precio Sesion.</Form.Control.Feedback>
                         </Form.Group>
                         <Form.Group>
                             <Form.Label style={{color:"black"}}>Compras</Form.Label>
