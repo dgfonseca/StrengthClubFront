@@ -8,7 +8,7 @@ import 'moment-timezone'
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import Select from 'react-select'
 import  {getClientes} from "../apis/Clientes";
-import  {getSesiones,crearSesion,registrarAsistencia,desagendarSesion, crearSesionIcs} from "../apis/Sesiones"
+import  {getSesiones,crearSesion,registrarAsistencia,desagendarSesion, crearSesionIcs,borrarSesionesEntrenador} from "../apis/Sesiones"
 import {getEntrenadores} from "../apis/Entrenadores"
 import TimePicker from 'react-time-picker';
 import DatePicker from 'react-date-picker';
@@ -205,12 +205,24 @@ export default function CalendarPanel(){
         
     }
 
-    const delay = ms => new Promise(
-        resolve => setTimeout(resolve, ms)
-      );
 
     const handleUploadIcs=async ()=>{
         let arr = []
+        try {
+            await borrarSesionesEntrenador({
+                entrenador:icsData[0].entrenador,
+                fechaInicio: fechaInicio,
+                fechaFin: fechaFin
+            })
+        } catch (error) {
+            if(error.response.status===401){
+                localStorage.removeItem("token")
+                navigate("/")
+            }else{
+                setError("No se pudo borrar el calendario del entrenador para volver a cargarlo");
+                setShow2(true);
+            }
+        }
         for(let element of icsData){
             try {
                 await  crearSesionIcs({
