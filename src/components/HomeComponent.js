@@ -291,10 +291,14 @@ function parseProductos(){
                 setValidated(false);
               if(response.request.status===200){
                   if(pago){
+                    let suplemento="SUPLEMENTO";
+                    if(response.data.esSesiones){
+                        suplemento="SESION"
+                    }
                     registrarAbono({
                         cliente:cliente.value,
                         abono:precioCalculado,
-                        tipo:"SUPLEMENTO"
+                        tipo:suplemento
                     }).then(response=>{
                         setSuccess("Venta con pago registrada correctamente")
                         setShow3(true)
