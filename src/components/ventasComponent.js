@@ -1,5 +1,5 @@
 import React,{useState, useMemo} from "react";
-import { Row,Modal,Button,Form,Alert,ListGroup} from "react-bootstrap";
+import { Col,Row,Modal,Button,Form,Alert,ListGroup} from "react-bootstrap";
 import '../index.css';
 import { useTable, useFilters, useSortBy } from "react-table";
 import { borrarVenta, getContenidoVentas, getVentas } from "../apis/Ventas";
@@ -59,11 +59,23 @@ const handleShowDeleteVenta = e =>{
 }
 
 const [filterInput, setFilterInput] = useState("");
+const [filterInput2, setFilterInput2] = useState("");
+const [filterInput3, setFilterInput3] = useState("");
 
 const handleFilterChange = e => {
-  const value = e.target.value || undefined;
+  const value = e.target.value || "";
   setFilter("nombre", value); // Update the show.name filter. Now our table will filter and show only the rows which have a matching value
   setFilterInput(value);
+};
+const handleFilterChange2 = e => {
+  const value = e.target.value || "";
+  setFilter("fecha", value); // Update the show.name filter. Now our table will filter and show only the rows which have a matching value
+  setFilterInput2(value);
+};
+const handleFilterChange3 = e => {
+  const value = e.target.value || "";
+  setFilter("usuario", value); // Update the show.name filter. Now our table will filter and show only the rows which have a matching value
+  setFilterInput3(value);
 };
 const columns = useMemo(()=>[
     {
@@ -142,11 +154,30 @@ const handleSubmit = (event) => {
 
     return(
         <Row className="justify-content-md-center" style={{margin:"5%"}}>
-            <input
-            value={filterInput}
-            onChange={handleFilterChange}
-            placeholder={"Buscar Cliente"}
-            />
+            <Col>
+                <h5>Cliente</h5>
+                <input
+                value={filterInput}
+                onChange={handleFilterChange}
+                placeholder={"Buscar por Cliente"}
+                />
+            </Col>
+            <Col>
+                <h5>Fecha</h5>
+                <input
+                value={filterInput2}
+                onChange={handleFilterChange2}
+                placeholder={"Buscar por Fecha"}
+                />
+            </Col>
+            <Col>
+                <h5>Usuario</h5>
+                <input
+                value={filterInput3}
+                onChange={handleFilterChange3}
+                placeholder={"Buscar por Usuario"}
+                />
+            </Col>
             <table {...getTableProps()}>
                 <thead>
                     {headerGroups.map(headerGroup => (
