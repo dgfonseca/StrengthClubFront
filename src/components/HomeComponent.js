@@ -51,7 +51,7 @@ export default function HomePane(props){
     const[error, setError]=useState();
     const[success, setSuccess]=useState("Sesion Creada/Modificada Exitosamente");
     const [pago, setPago]=useState(false);
-    const [tipo, setTipo]=useState("SUPLEMENTO");
+    const [tipo, setTipo]=useState();
 
 
 
@@ -426,7 +426,7 @@ function parseProductos(){
                                     </Form.Group>
                                     <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea2">
                                         <Form.Label style={{color:"black"}}>Precio</Form.Label>
-                                        <Form.Control required type="number" placeholder="Precio" defaultValue={0} onChange={e=>setAbono(e.target.value)}/>
+                                        <Form.Control required type="number" placeholder="Precio" onWheel={event => { event.preventDefault(); }} defaultValue={0} onChange={e=>setAbono(e.target.value)}/>
                                         <Form.Control.Feedback type="invalid">Precio.</Form.Control.Feedback>
                                     </Form.Group>
                                     <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea2">
@@ -505,7 +505,7 @@ function parseProductos(){
                                         <Form.Label style={{color:"black"}}>Producto</Form.Label>
                                         <Select options={productos} onChange={value=>setProductoSeleccionado(value)}></Select>
                                         <Form.Label style={{color:"black"}}>Cantidad</Form.Label>
-                                        <Form.Control required type="number" placeholder="Cantidad"  onChange={e=>setCantidad(e.target.value)}/>
+                                        <Form.Control required type="number" placeholder="Cantidad" onWheel={event => { event.preventDefault(); }} onChange={e=>setCantidad(e.target.value)}/>
                                         <Container>
                                             <Row className="justify-content-md-center">
                                                 <Col>
@@ -573,7 +573,7 @@ function parseProductos(){
                                         </InputGroup>
                                     </Form.Group>
                                     <Form.Group className="mb-3">
-                                        <Form.Label style={{color:"black"}}>Pago:</Form.Label>
+                                        <Form.Label style={{color:"black"}}>Pagó:</Form.Label>
                                         <Form.Check
                                         defaultChecked={pago}
                                         onChange={event=>setPago(event.target.checked)}

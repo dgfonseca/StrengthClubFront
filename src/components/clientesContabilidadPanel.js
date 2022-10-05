@@ -49,7 +49,7 @@ const filtrarClientes = ()=>{
         setShow2(true)
     }
 }
-const handleSubmit = ()=>{
+const handleSubmit = async()=>{
     if(!notificacion){
         notificarClienteCorreo({cedula:cliente,fechaInicio:fechaInicio,fechaFin:fechaFin}).then(response=>{
             if(response.request.status===200){
@@ -69,22 +69,31 @@ const handleSubmit = ()=>{
             }
           })
     }else{
-        notificarClientesCorreo().then(response=>{
-            if(response.request.status===200){
-                setShow3(true)
-              }else{
-                  setError("No se pudo notificar los siguientes clientes: "+response.errores);
-                  setShow2(true)
-              }
-          }).catch(error=>{
-            if(error.response.status===401){
-                localStorage.removeItem("token")
-               navigate("/")
-            }else{
-                setError("No se pudo Notificar los clientes");
-                setShow2(true)
+        let arr = []
+        for(let cliente of data){
+            try {
+                let response = await notificarClienteCorreo(
+                    {cedula:cliente.cedula,fechaInicio:fechaInicio,fechaFin:fechaFin}
+                )
+                if(response.request.status!==200){
+                    arr.push("No se pudo notificar el cliente: "+cliente.nombre + ".")
+                }
+            } catch (error) {
+                if(error.response.status===401){
+                    localStorage.removeItem("token")
+                   navigate("/")
+                }else{
+                    arr.push("No se pudo notificar el cliente: "+cliente.nombre  + ".")
+                }
             }
-          })
+            
+        }
+        if(arr.length>0){
+            setError(arr);
+            setShow2(true)
+        }else{
+            setShow3(true)
+        }
     }
     setShow(false)
 };

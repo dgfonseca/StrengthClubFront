@@ -55,7 +55,12 @@ export default function CalendarPanel(){
                 event.title.toLowerCase().indexOf(searchValue) > -1,
             
         );
-        setFilteredEvents(search);
+        const search2 = sesiones.filter(
+            event =>
+                event.entrenador.toLowerCase().indexOf(searchValue) > -1,
+            
+        );
+        setFilteredEvents(search.concat(search2));
     }
 
     const handleClose = () => setShow(false);
@@ -159,7 +164,8 @@ export default function CalendarPanel(){
                     'start': parseDate(element.fecha), 
                     'end': parseDate(element.fechafin), 
                     'color': element.color,
-                    'sesion': element
+                    'sesion': element,
+                    'entrenador':element.nombreentrenador
                   })
             })
             setSesiones(arrSesiones);
@@ -398,7 +404,7 @@ export default function CalendarPanel(){
                         <input
             value={searchValue}
             onChange={searchClient}
-            placeholder={"Buscar Cliente"}
+            placeholder={"Buscar Cliente o Entrenador"}
             />
                         <Calendar
                         localizer={localizer}

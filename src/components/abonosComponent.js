@@ -1,7 +1,7 @@
 import React,{useState, useMemo} from "react";
 import { Col,Row,Modal,Button,Form,Alert} from "react-bootstrap";
 import '../index.css';
-import { useTable, useFilters, useSortBy } from "react-table";
+import { useTable, useFilters, useSortBy, usePagination } from "react-table";
 import { borrarAbono, getAbonos } from "../apis/Clientes";
 import { useNavigate } from "react-router-dom";
 
@@ -97,13 +97,22 @@ const {
     getTableProps, // table props from react-table
     getTableBodyProps, // table body props from react-table
     headerGroups, // headerGroups, if your table has groupings
-    rows, // rows for the table based on the data passed
+    page, // rows for the table based on the data passed
     prepareRow,
-    setFilter
+    setFilter,
+    canPreviousPage,
+    canNextPage,
+    pageOptions,
+    pageCount,
+    gotoPage,
+    nextPage,
+    previousPage,
+    setPageSize,
+    state: { pageIndex, pageSize },
   } = useTable({
     columns,
     data
-  },useFilters, useSortBy);
+  },useFilters, useSortBy,usePagination);
 
 
 
@@ -178,7 +187,7 @@ const handleSubmit = (event) => {
                 </thead>
                 <tbody {...getTableBodyProps()}>
                     {
-                    rows.map((row, i) => {
+                    page.map((row, i) => {
                     prepareRow(row);
                     return (
                         <tr className="itemRow" {...row.getRowProps()} onClick={()=> { handleShowDeleteVenta(row);}}>
@@ -192,6 +201,50 @@ const handleSubmit = (event) => {
                     })}
                 </tbody>
             </table>
+            <div>
+        <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
+          {"<<"}
+        </button>{" "}
+        <button onClick={() => previousPage()} disabled={!canPreviousPage}>
+          Previous
+        </button>{" "}
+        <button onClick={() => nextPage()} disabled={!canNextPage}>
+          Next
+        </button>{" "}
+        <button onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
+          {">>"}
+        </button>{" "}
+        <span>
+          Page{" "}
+          <strong>
+            {pageIndex + 1} of {pageOptions.length}
+          </strong>{" "}
+        </span>
+        <span>
+          | Go to page:{" "}
+          <input
+            type="number"
+            defaultValue={pageIndex + 1}
+            onChange={(e) => {
+              const pageNumber = e.target.value
+                ? Number(e.target.value) - 1
+                : 0;
+              gotoPage(pageNumber);
+            }}
+            style={{ width: "50px" }}
+          />
+        </span>{" "}
+        <select
+          value={pageSize}
+          onChange={(e) => setPageSize(Number(e.target.value))}
+        >
+          {[10, 25, 50].map((pageSize) => (
+            <option key={pageSize} value={pageSize}>
+              Show {pageSize}
+            </option>
+          ))}
+        </select>
+      </div>
             <Modal show={show} onHide={handleClose} backdrop="static" keyboard={false}>
                 <Modal.Header closeButton>
                     <Modal.Title>Abono</Modal.Title>

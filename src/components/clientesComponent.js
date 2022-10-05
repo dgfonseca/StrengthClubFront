@@ -23,6 +23,7 @@ const [cedula, setCedula] = useState();
 const [telefono,setTelefono] = useState();
 const [fechaNacimiento,setFechaNacimiento] = useState();
 const [anticipado, setAnticipado]=useState(true);
+const [habilitado, setHabilitado]=useState(true);
 const[error, setError]=useState();
 
 const [show, setShow] = useState(false);
@@ -48,6 +49,7 @@ const handleClose = () => {
     setAnticipado(true)
     setVentas([])
     setPrecioSesion(null)
+    setHabilitado(true);
     setShow(false)};
 const handleShow = () => setShow(true);
 
@@ -64,6 +66,8 @@ const handleShowUpdateCliente =  async e =>{
             setDireccion(e.cells[4].value)
             setFechaNacimiento(e.cells[5].value)
             setAnticipado(e.cells[7].value)
+            setPrecioSesion(e.cells[8].value)
+            setHabilitado(e.cells[9].value)
             handleShow()
         }).catch(error=>{
             if(error.response.status===401){
@@ -119,6 +123,10 @@ const columns = useMemo(()=>[
         {
             Header: "Precio Sesion",
             accessor: "precio_sesion"
+        },
+        {
+            Header: "Habilitado",
+            accessor: "habilitado"
         }
     ],
 }],[]);
@@ -154,7 +162,8 @@ const handleSubmit = (event) => {
                 cedula:cedula,
                 fechaNacimiento:fechaNacimiento,
                 anticipado:anticipado,
-                precioSesion:precioSesion
+                precioSesion:precioSesion,
+                habilitado:habilitado
               }).then(response=>{
                   setValidated(false);
                 if(response.request.status==200){
@@ -288,6 +297,13 @@ function renderRow(props) {
                                     return <td>Vencido</td>;
                                 }
                             }
+                            if(cell.column.Header==='Habilitado'){
+                                if(cell.value){
+                                    return <td><div style={{background:"green",height:"20px",width:"20px", marginLeft:"40%", borderRadius:"50%"}}></div></td>
+                                }else{
+                                    return <td><div style={{background:"red",height:"20px",width:"20px", marginLeft:"40%", borderRadius:"50%"}}></div></td>
+                                }
+                            }
                             if(cell.column.Header==="Precio Sesion" && (cell.value===null||cell.value===0||cell.value===undefined)){
                                 return <td>N/A</td>
                             }
@@ -345,9 +361,16 @@ function renderRow(props) {
                                         onChange={event=>setAnticipado(event.target.checked)}
                                         />
                         </Form.Group>
+                        <Form.Group className="mb-3">
+                                        <Form.Label style={{color:"black"}}>Habilitado:</Form.Label>
+                                        <Form.Check
+                                        defaultChecked={habilitado}
+                                        onChange={event=>setHabilitado(event.target.checked)}
+                                        />
+                        </Form.Group>
                         <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea2">
                                         <Form.Label style={{color:"black"}}>Precio Sesion</Form.Label>
-                                        <Form.Control required type="number" placeholder="Precio" defaultValue={0} onChange={e=>setPrecioSesion(e.target.value)}/>
+                                        <Form.Control required type="number" placeholder="Precio" defaultValue={precioSesion} onChange={e=>setPrecioSesion(e.target.value)}/>
                                         <Form.Control.Feedback type="invalid">Precio Sesion.</Form.Control.Feedback>
                         </Form.Group>
                         <Form.Group>
