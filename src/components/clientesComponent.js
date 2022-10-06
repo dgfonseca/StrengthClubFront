@@ -152,7 +152,8 @@ const handleSubmit = (event) => {
     }
     else{
     setValidated(true);
-    if(direccion&&nombre&&email&&cedula&&telefono){
+    if(direccion&&nombre&&email&&cedula&&telefono&&fechaNacimiento){
+        let fecha = new Date(fechaNacimiento);
         if(buttonName==="Modificar"){
             actualizarCliente({
                 nombre:nombre,
@@ -160,7 +161,7 @@ const handleSubmit = (event) => {
                 email:email,
                 telefono:telefono,
                 cedula:cedula,
-                fechaNacimiento:fechaNacimiento,
+                fechaNacimiento:fecha.toISOString().split('T')[0],
                 anticipado:anticipado,
                 precioSesion:precioSesion,
                 habilitado:habilitado
@@ -194,7 +195,7 @@ const handleSubmit = (event) => {
                 email:email,
                 telefono:telefono,
                 cedula:cedula,
-                fechaNacimiento:fechaNacimiento,
+                fechaNacimiento:fecha.toISOString().split('T')[0],
                 anticipado:anticipado
               }).then(response=>{
                   setValidated(false);
