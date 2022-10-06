@@ -159,7 +159,7 @@ export default function CalendarPanel(){
         getSesiones().then(result=>{
             result.data.sesiones.forEach(element=>{
                 arrSesiones.push({
-                    'title': element.nombrecliente,
+                    'title': element.asistio?element.nombrecliente:"*"+element.nombrecliente,
                     'allDay': false,
                     'start': parseDate(element.fecha), 
                     'end': parseDate(element.fechafin), 
@@ -221,13 +221,8 @@ export default function CalendarPanel(){
                 fechaFin: fechaFin
             })
         } catch (error) {
-            if(error.response.status===401){
-                localStorage.removeItem("token")
-                navigate("/")
-            }else{
-                setError("No se pudo borrar el calendario del entrenador para volver a cargarlo");
+                setError("No se pudo borrar el calendario del entrenador para volver a cargarlo, vuelva a intentarlo");
                 setShow2(true);
-            }
         }
         for(let element of icsData){
             try {
@@ -245,7 +240,7 @@ export default function CalendarPanel(){
                 }else{
                     setValidated(false);
                     arr.push({
-                    descripcion:error.response.data.message
+                        descripcion:error.response.data.message
                     })
                 }
             }
