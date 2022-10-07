@@ -298,7 +298,8 @@ function parseProductos(){
                     registrarAbono({
                         cliente:cliente.value,
                         abono:precioCalculado,
-                        tipo:suplemento
+                        tipo:suplemento,
+                        fecha:date
                     }).then(response=>{
                         setSuccess("Venta con pago registrada correctamente")
                         setShow3(true)
