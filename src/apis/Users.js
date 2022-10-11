@@ -24,8 +24,12 @@ async function getUsuarios(){
     return await axios.get("https://strength-club-sprint1.herokuapp.com/usuarios", { headers: authHeader()});
 }
 
+async function getOperacionesUsuarios(){
+    return await axios.get("https://strength-club-sprint1.herokuapp.com/operaciones", { headers: authHeader()});
+}
+
 async function getCurrentUser(){
   return JSON.parse(localStorage.getItem("token"))
 }
 
-export {loginApi,crearUsuario, getUsuarios,getCurrentUser};
+export {loginApi,crearUsuario, getUsuarios,getCurrentUser,getOperacionesUsuarios};

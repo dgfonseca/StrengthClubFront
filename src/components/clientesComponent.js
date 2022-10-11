@@ -1,5 +1,5 @@
-import React,{useState, useMemo, setState} from "react";
-import { ListGroup,Row,Modal,Button,Form,Alert,Col,Tab } from "react-bootstrap";
+import React,{useState, useMemo} from "react";
+import { ListGroup,Row,Modal,Button,Form,Alert} from "react-bootstrap";
 import '../index.css';
 import {crearCliente, actualizarCliente, deleteCliente, getVentasCliente, getClientes} from "../apis/Clientes"
 import { useTable, useFilters, useSortBy } from "react-table";
@@ -167,7 +167,7 @@ const handleSubmit = (event) => {
                 habilitado:habilitado
               }).then(response=>{
                   setValidated(false);
-                if(response.request.status==200){
+                if(response.request.status===200){
                     setShow3(true)
                     setSuccess("actualizado")
                     getClientes().then(response=>{
@@ -199,7 +199,7 @@ const handleSubmit = (event) => {
                 anticipado:anticipado
               }).then(response=>{
                   setValidated(false);
-                if(response.request.status==200){
+                if(response.request.status===200){
                     setShow3(true)
                     setSuccess("creado")
                     getClientes().then(response=>{
@@ -230,7 +230,7 @@ const handleSubmit = (event) => {
             cedula:cedula
           }).then(response=>{
               setValidated(false);
-            if(response.request.status==200){
+            if(response.request.status===200){
                 setSuccess("borrado")
                 setShow3(true)
                 getClientes().then(response=>{
@@ -291,7 +291,7 @@ function renderRow(props) {
                         <tr className="itemRow" {...row.getRowProps()} onClick={async ()=> {
                             await handleShowUpdateCliente(row);}}>
                         {row.cells.map(cell => {
-                            if(cell.column.Header=="Pago"){
+                            if(cell.column.Header==="Pago"){
                                 if(cell.value){
                                     return <td >Anticipado</td>;
                                 }else{

@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useMemo} from "react";
 import '../../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import { Container,Row,Col } from 'react-bootstrap';
 import { ListGroup,Modal,Button,Form,Alert, InputGroup } from "react-bootstrap";
@@ -13,6 +13,9 @@ import DatePicker from 'react-date-picker';
 import { registrarVenta, registrarAbono } from "../apis/Ventas";
 import {getPaquetes} from "../apis/Paquetes"
 import { useNavigate } from "react-router-dom";
+import { useTable, useFilters, useSortBy } from "react-table";
+import { getOperacionesUsuarios } from "../apis/Users";
+
 
 
 
@@ -24,6 +27,7 @@ export default function HomePane(props){
     const [entrenador,setEntrenador]=useState();
     const [fecha,setFecha]=useState();
     const [hora, setHora]=useState();
+    const [data, setData]=useState([]);
 
     const [clientes,setClientes]=useState([]);
     const [entrenadores,setEntrenadores]=useState([]);
@@ -43,6 +47,7 @@ export default function HomePane(props){
     const [showProductosCarrito, setShowProductosCarrito] = useState(false);
     const [showPaquetesCarrito, setShowPaquetesCarrito] = useState(false);
     const [showVenta, setShowVenta]=useState();
+    const [showOperaciones, setShowOperaciones]=useState(true);
     const [show, setShow]=useState();
     const [show2, setShow2] = useState(false);
     const [show3, setShow3] = useState(false);
@@ -53,7 +58,47 @@ export default function HomePane(props){
     const [pago, setPago]=useState(false);
     const [tipo, setTipo]=useState();
 
-
+    const columns = useMemo(()=>[
+        {
+        Header: "Operaciones",
+        columns:[
+            {
+                Header: "Id",
+                accessor: "id"
+            },
+            {
+                Header: "Nombre",
+                accessor: "nombre"
+            },
+            {
+                Header: "Fecha",
+                accessor: "fecha"
+            },
+            {
+                Header: "Precio",
+                accessor: "valor"
+            },
+            {
+                Header: "Usuario",
+                accessor: "usuario"
+            },
+            {
+                Header: "Tipo",
+                accessor: "tipo"
+            }
+        ],
+    }],[]);
+    
+    const {
+        getTableProps, // table props from react-table
+        getTableBodyProps, // table body props from react-table
+        headerGroups, // headerGroups, if your table has groupings
+        rows, // rows for the table based on the data passed
+        prepareRow,
+      } = useTable({
+        columns,
+        data
+      },useFilters,useSortBy);
 
     
     const handleClose = () => {setShow(false);setAbono(0);setCliente("")}
@@ -64,6 +109,26 @@ export default function HomePane(props){
     const handleShow4 = () =>{setShow4(true);parseClientes()}
     const handleShowVenta = () => {setShowVenta(true);parseClientes();parseProductos();parsePaquetes();}; 
     const [validated, setValidated] = useState(false);
+    const handleShowOperaciones = ()=>{
+        if(showOperaciones){
+        getOperacionesUsuarios().then(result=>{
+            console.log(result.data.operaciones)
+            setData(result.data.operaciones)
+            setShowOperaciones(false)
+        }).catch(error=>{
+            if(error.response.status===401){
+                localStorage.removeItem("token")
+               navigate("/")
+            }else{
+                setError("Error al obtener las operaciones")
+                setShow2(true)
+            }
+
+        })
+        }else{
+            setShowOperaciones(true)
+        }
+    }
 
 
     function handleShowProductosCarrito(){
@@ -595,6 +660,42 @@ function parseProductos(){
                             </Modal.Footer>
                         </Modal>
                     </Col>
+                </Row>
+                <Row>
+                    <Col>
+                        <button type="button" onClick={handleShowOperaciones} style={{margin:"2%",width:"40%"}} className="btn btn-dark">Mostrar operaciones</button>
+                    </Col>
+                </Row>
+                <Row>
+                    <table {...getTableProps()} hidden={showOperaciones}>
+                        <thead>
+                            {headerGroups.map(headerGroup => (
+                            <tr {...headerGroup.getHeaderGroupProps()}>
+                                {headerGroup.headers.map(column => 
+                                {
+                                    if(column.Header!=='Id'){
+                                        return <th {...column.getHeaderProps(column.getSortByToggleProps())}>{column.render("Header")}</th>
+                                    }
+                                })}
+                            </tr>
+                            ))}
+                        </thead>
+                        <tbody {...getTableBodyProps()}>
+                            {
+                            rows.map((row, i) => {
+                            prepareRow(row);
+                            return (
+                                <tr className="itemRow" {...row.getRowProps()}>
+                                {row.cells.map(cell => {
+                                    if(cell.column.Header!=='Id'){
+                                        return <td {...cell.getCellProps()}>{cell.render("Cell")}</td>;
+                                    }
+                                })}
+                                </tr>
+                            );
+                            })}
+                        </tbody>
+                    </table>
                 </Row>
             </Container>  
   );
