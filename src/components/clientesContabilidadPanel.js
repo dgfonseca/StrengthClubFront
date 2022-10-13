@@ -1,11 +1,19 @@
 import React,{useState, useMemo} from "react";
 import '../index.css';
 import { useTable, useFilters, useSortBy } from "react-table";
-import { Row,Col,Form,Modal, Alert } from 'react-bootstrap';
+import { Row,Col,Form,Modal, Alert,ListGroup } from 'react-bootstrap';
 import Button from '@mui/material/Button';
 import SendIcon from '@mui/icons-material/Send';
-import { getContabilidadClientes, notificarClienteCorreo,notificarClientesCorreo } from "../apis/Clientes";
+import { getContabilidadClientes, notificarClienteCorreo,getAbonosCliente } from "../apis/Clientes";
 import { useNavigate } from "react-router-dom";
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemText from '@mui/material/ListItemText';
+import { getContenidoVentas } from "../apis/Ventas";
+import { getVentasCliente } from "../apis/Clientes";
+import Box from '@mui/material/Box';
+import { FixedSizeList } from 'react-window';
+
 
 
 
@@ -13,12 +21,16 @@ import { useNavigate } from "react-router-dom";
 
 export default function ClientesContabilidadPanel({data2}){
 const navigate = useNavigate();
+const [ventas, setVentas] = useState([])
+const [abonos, setAbonos] = useState([])
+const [contenidoVenta, setContenidoVenta]=useState([])
 const [fechaInicio, setFechaInicio]=useState("");
 const [fechaFin, setFechaFin]=useState("");
 const [cliente,setCliente]=useState("")
 const [show, setShow]=useState(false)
 const [show2, setShow2]=useState(false)
 const [show3, setShow3]=useState(false)
+const [showContenidoSaldo, setShowContenidoSaldo]=useState(false);
 const [error, setError]=useState("")
 const [notificacion, setNotificacion]=useState(false);
 const [data,setData]=useState(data2);
@@ -150,6 +162,57 @@ const {
     data
   },useFilters,useSortBy);
 
+  function renderRow(props) {
+    const { index, style } = props;
+  
+    return (
+      <ListItem style={style} key={index} component="div" disablePadding>
+        <ListItemButton>
+          <ListItemText primary={`Fecha: ${ventas[index].fecha}, Precio: ${ventas[index].valor}`} onClick={()=>{getContenidoVentas({id:ventas[index].id}).then(result=>{setContenidoVenta(result.data.contenido)})}} />
+        </ListItemButton>
+      </ListItem>
+    );
+  }
+  function renderRow2(props) {
+    const { index, style } = props;
+  
+    return (
+      <ListItem style={style} key={index} component="div" disablePadding>
+        <ListItemButton>
+          <ListItemText primary={`Fecha: ${abonos[index].fecha}, Valor: ${abonos[index].valor}, Tipo: ${abonos[index].tipo}`} />
+        </ListItemButton>
+      </ListItem>
+    );
+  }
+
+  const handleShowContabilidad =  async e =>{
+    getVentasCliente({
+        "cliente":e.cells[1].value
+    }).then(result=>{
+        setVentas(result.data.ventas)
+        getAbonosCliente({
+            "cliente":e.cells[1].value
+        }).then(result=>{
+            setAbonos(result.data.abonos)
+            console.log(result.data.abonos)
+            setShowContenidoSaldo(true)
+        }).catch(error=>{
+            if(error.response.status===401){
+                localStorage.removeItem("token")
+               navigate("/")
+            }
+        })
+    }).catch(error=>{
+        if(error.response.status===401){
+            localStorage.removeItem("token")
+           navigate("/")
+        }else{
+            setError("No se pudo cargar la información del cliente")
+            setShow2(true)
+        }
+    })
+}
+
 
     return(
         <Row className="justify-content-md-center" style={{margin:"5%"}}>
@@ -193,7 +256,8 @@ const {
                     rows.map((row, i) => {
                     prepareRow(row);
                     return (
-                        <tr className="itemRow" {...row.getRowProps()} >
+                        <tr className="itemRow" {...row.getRowProps()} onClick={async ()=> {
+                            await handleShowContabilidad(row);}}>
                         {row.cells.map(cell => {
                             if(cell.column.Header==='Notificar'){
                                 return <td><Button variant="outlined" size="medium" color="success" endIcon={<SendIcon/>} onClick={()=>{handleShow();setCliente(row.cells[1].value);setNotificacion(false)}}></Button></td>
@@ -205,6 +269,66 @@ const {
                     })}
                 </tbody>
             </table>
+            <Modal show={showContenidoSaldo} onHide={()=>{setShowContenidoSaldo(false);setContenidoVenta([])}} backdrop="static" keyboard={false}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Cliente</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form noValidate onSubmit={handleSubmit}>
+                        <Form.Group>
+                            <Form.Label style={{color:"black"}}>Compras</Form.Label>
+                            <Box
+                                sx={{ width: '100%', height: 200, maxWidth: 400, bgcolor: 'background.paper' }}
+                                >
+                                <FixedSizeList
+                                    height={200}
+                                    width={400}
+                                    itemSize={50}
+                                    itemCount={ventas.length}
+                                    overscanCount={5}
+                                >
+                                    {renderRow}
+                                </FixedSizeList>
+                            </Box>
+                            <Form.Label style={{color:"black"}}>Contenido</Form.Label>
+                            <ListGroup>
+                                {
+                                    contenidoVenta.map((item,index)=>(
+                                        <ListGroup.Item action href={'#' + index}>
+                                            Codigo: {item.codigo}
+                                            <br></br>
+                                            Nombre: {item.nombre}        
+                                            <br></br>
+                                            Cantidad: {item.cantidad}
+                                        </ListGroup.Item>
+                                    ))
+                                }
+                            </ListGroup>
+                        </Form.Group> 
+                        <Form.Group>
+                            <Form.Label style={{color:"black"}}>Abonos</Form.Label>
+                            <Box
+                                sx={{ width: '100%', height: 200, maxWidth: 400, bgcolor: 'background.paper' }}
+                                >
+                                <FixedSizeList
+                                    height={200}
+                                    width={400}
+                                    itemSize={50}
+                                    itemCount={abonos.length}
+                                    overscanCount={5}
+                                >
+                                    {renderRow2}
+                                </FixedSizeList>
+                            </Box>
+                        </Form.Group> 
+                    </Form>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={()=>{setShowContenidoSaldo(false);setContenidoVenta([])}}>
+                        Cerrar
+                    </Button>
+                </Modal.Footer>
+            </Modal>
             <Modal show={show} onHide={handleClose} backdrop="static" keyboard={false}>
                 <Modal.Header closeButton>
                     <Modal.Title>Notificar Clientes</Modal.Title>

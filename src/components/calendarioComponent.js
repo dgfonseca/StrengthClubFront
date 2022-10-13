@@ -220,43 +220,44 @@ export default function CalendarPanel(){
                 fechaInicio: fechaInicio,
                 fechaFin: fechaFin
             })
+            for(let element of icsData){
+                try {
+                    await  crearSesionIcs({
+                            cliente:element.cliente,
+                            entrenador:element.entrenador,
+                            fecha:parseDate2(element.fecha),
+                            asistio:true
+                            })
+                    setValidated(false);
+                } catch (error) {
+                    if(error.response.status===401){
+                        localStorage.removeItem("token")
+                        navigate("/")
+                    }else{
+                        setValidated(false);
+                        arr.push({
+                            descripcion:error.response.data.message
+                        })
+                    }
+                }
+            }
+            setIcsData([])
+            if(arr.length!==0){
+                let errors = "Los eventos con la siguiente descripción no se cargaron correctamente:"
+                for(let element of arr){
+                    errors=errors.concat(" "+element.descripcion+",")
+                }
+                setError(errors);
+                setShow2(true);
+            }else{
+                setShow3(true)
+            }
+            parseSesiones()
         } catch (error) {
                 setError("No se pudo borrar el calendario del entrenador para volver a cargarlo, vuelva a intentarlo");
                 setShow2(true);
         }
-        for(let element of icsData){
-            try {
-                await  crearSesionIcs({
-                        cliente:element.cliente,
-                        entrenador:element.entrenador,
-                        fecha:parseDate2(element.fecha),
-                        asistio:true
-                        })
-                setValidated(false);
-            } catch (error) {
-                if(error.response.status===401){
-                    localStorage.removeItem("token")
-                    navigate("/")
-                }else{
-                    setValidated(false);
-                    arr.push({
-                        descripcion:error.response.data.message
-                    })
-                }
-            }
-        }
-        setIcsData([])
-        if(arr.length!==0){
-            let errors = "Los eventos con la siguiente descripción no se cargaron correctamente:"
-            for(let element of arr){
-                errors=errors.concat(" "+element.descripcion+",")
-            }
-            setError(errors);
-            setShow2(true);
-        }else{
-            setShow3(true)
-        }
-        parseSesiones()
+        
     }
     const handleDeleteSesion=()=>{
         desagendarSesion({

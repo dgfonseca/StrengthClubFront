@@ -3,10 +3,10 @@ import { ListGroup,Row,Modal,Button,Form,Alert} from "react-bootstrap";
 import '../index.css';
 import {crearCliente, actualizarCliente, deleteCliente, getVentasCliente, getClientes} from "../apis/Clientes"
 import { useTable, useFilters, useSortBy } from "react-table";
-import Box from '@mui/material/Box';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
+import Box from '@mui/material/Box';
 import { FixedSizeList } from 'react-window';
 import { getContenidoVentas } from "../apis/Ventas";
 import { useNavigate } from "react-router-dom";

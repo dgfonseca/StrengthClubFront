@@ -660,42 +660,42 @@ function parseProductos(){
                             </Modal.Footer>
                         </Modal>
                     </Col>
-                </Row>
-                <Row>
-                    <Col>
+                    <Col className="col-sm">
                         <button type="button" onClick={handleShowOperaciones} style={{margin:"2%",width:"40%"}} className="btn btn-dark">Mostrar operaciones</button>
                     </Col>
                 </Row>
                 <Row>
-                    <table {...getTableProps()} hidden={showOperaciones}>
-                        <thead>
-                            {headerGroups.map(headerGroup => (
-                            <tr {...headerGroup.getHeaderGroupProps()}>
-                                {headerGroup.headers.map(column => 
-                                {
-                                    if(column.Header!=='Id'){
-                                        return <th {...column.getHeaderProps(column.getSortByToggleProps())}>{column.render("Header")}</th>
-                                    }
-                                })}
-                            </tr>
-                            ))}
-                        </thead>
-                        <tbody {...getTableBodyProps()}>
-                            {
-                            rows.map((row, i) => {
-                            prepareRow(row);
-                            return (
-                                <tr className="itemRow" {...row.getRowProps()}>
-                                {row.cells.map(cell => {
-                                    if(cell.column.Header!=='Id'){
-                                        return <td {...cell.getCellProps()}>{cell.render("Cell")}</td>;
-                                    }
-                                })}
+                    <Col>
+                        <table {...getTableProps()} hidden={showOperaciones}>
+                            <thead>
+                                {headerGroups.map(headerGroup => (
+                                <tr {...headerGroup.getHeaderGroupProps()}>
+                                    {headerGroup.headers.map(column => 
+                                    {
+                                        if(column.Header!=='Id'){
+                                            return <th {...column.getHeaderProps(column.getSortByToggleProps())}>{column.render("Header")}</th>
+                                        }
+                                    })}
                                 </tr>
-                            );
-                            })}
-                        </tbody>
-                    </table>
+                                ))}
+                            </thead>
+                            <tbody {...getTableBodyProps()}>
+                                {
+                                rows.map((row, i) => {
+                                prepareRow(row);
+                                return (
+                                    <tr className="itemRow" {...row.getRowProps()}>
+                                    {row.cells.map(cell => {
+                                        if(cell.column.Header!=='Id'){
+                                            return <td {...cell.getCellProps()}>{cell.render("Cell")}</td>;
+                                        }
+                                    })}
+                                    </tr>
+                                );
+                                })}
+                            </tbody>
+                        </table>
+                    </Col>
                 </Row>
             </Container>  
   );
