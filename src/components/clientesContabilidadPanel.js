@@ -256,7 +256,7 @@ const {
                     rows.map((row, i) => {
                     prepareRow(row);
                     return (
-                        <tr className="itemRow" {...row.getRowProps()} onClick={async ()=> {
+                        <tr className="itemRow" {...row.getRowProps()} onDoubleClick={async ()=> {
                             await handleShowContabilidad(row);}}>
                         {row.cells.map(cell => {
                             if(cell.column.Header==='Notificar'){
