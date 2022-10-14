@@ -260,7 +260,7 @@ function renderRow(props) {
     return (
       <ListItem style={style} key={index} component="div" disablePadding>
         <ListItemButton>
-          <ListItemText primary={`Fecha: ${ventas[index].fecha}, Precio: ${ventas[index].precio}$`} onClick={()=>{getContenidoVentas({id:ventas[index].id}).then(result=>{setContenidoVenta(result.data.contenido)})}} />
+          <ListItemText primary={`Fecha: ${ventas[index].fecha}, Precio: ${ventas[index].valor}$`} onClick={()=>{getContenidoVentas({id:ventas[index].id}).then(result=>{setContenidoVenta(result.data.contenido)})}} />
         </ListItemButton>
       </ListItem>
     );
