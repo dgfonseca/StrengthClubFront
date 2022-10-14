@@ -665,7 +665,7 @@ function parseProductos(){
                     </Col>
                 </Row>
                 <Row>
-                    <Col>
+                    
                         <table {...getTableProps()} hidden={showOperaciones}>
                             <thead>
                                 {headerGroups.map(headerGroup => (
@@ -695,7 +695,6 @@ function parseProductos(){
                                 })}
                             </tbody>
                         </table>
-                    </Col>
                 </Row>
             </Container>  
   );
