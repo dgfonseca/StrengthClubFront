@@ -187,6 +187,8 @@ const handleSubmit = (event) => {
                         setError("No se pudo crear el cliente: Verifique la información ingresada");
                         setShow2(true)
                     }
+                }).finally(()=>{                   
+                     handleClose();
                 })
             }else{
                 crearCliente({
@@ -218,6 +220,8 @@ const handleSubmit = (event) => {
                         setError("No se pudo crear el cliente: Verifique la información ingresada");
                         setShow2(true)
                     }
+                }).finally(()=>{            
+                    handleClose();
                 })
             }
             handleClose();
@@ -341,7 +345,7 @@ function renderRow(props) {
 
                         <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea2">
                             <Form.Label style={{color:"black"}}>Dirección</Form.Label>
-                            <Form.Control required type="textarea" defaultValue={direccion} placeholder="Dirección" onChange={e=>setDireccion(e.target.value)}/>
+                            <Form.Control type="textarea" defaultValue={direccion} placeholder="Dirección" onChange={e=>setDireccion(e.target.value)}/>
                             <Form.Control.Feedback type="invalid">Ingrese la dirección.</Form.Control.Feedback>
                         </Form.Group>
 
@@ -358,7 +362,7 @@ function renderRow(props) {
                         </Form.Group> 
                         <Form.Group className="mb-3" controlId="exampleForm.ControlDatearea">
                             <Form.Label style={{color:"black"}}>Fecha Nacimiento</Form.Label>
-                            <Form.Control required type="date" defaultValue={fechaNacimiento} placeholder="Fecha" onChange={e=>{setFechaNacimiento(e.target.value)}}/>
+                            <Form.Control type="date" defaultValue={fechaNacimiento} placeholder="Fecha" onChange={e=>{setFechaNacimiento(e.target.value)}}/>
                             <Form.Control.Feedback type="invalid">Ingrese la fecha de nacimiento.</Form.Control.Feedback>
                         </Form.Group>
                         <Form.Group className="mb-3">
@@ -377,7 +381,7 @@ function renderRow(props) {
                         </Form.Group>
                         <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea2">
                                         <Form.Label style={{color:"black"}}>Precio Sesion</Form.Label>
-                                        <Form.Control required type="number" placeholder="Precio" defaultValue={precioSesion} onChange={e=>setPrecioSesion(e.target.value)}/>
+                                        <Form.Control type="number" placeholder="Precio" defaultValue={precioSesion} onChange={e=>setPrecioSesion(e.target.value)}/>
                                         <Form.Control.Feedback type="invalid">Precio Sesion.</Form.Control.Feedback>
                         </Form.Group>
                         <Form.Group>
