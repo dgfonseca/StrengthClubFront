@@ -362,7 +362,7 @@ function renderRow(props) {
                         </Form.Group> 
                         <Form.Group className="mb-3" controlId="exampleForm.ControlDatearea">
                             <Form.Label style={{color:"black"}}>Fecha Nacimiento</Form.Label>
-                            <Form.Control type="date" defaultValue={fechaNacimiento} placeholder="Fecha" onChange={e=>{setFechaNacimiento(e.target.value)}}/>
+                            <Form.Control type="date" defaultValue={fechaNacimiento} placeholder="dd/mm/yyyy" onChange={e=>{setFechaNacimiento(e.target.value)}}/>
                             <Form.Control.Feedback type="invalid">Ingrese la fecha de nacimiento.</Form.Control.Feedback>
                         </Form.Group>
                         <Form.Group className="mb-3">
