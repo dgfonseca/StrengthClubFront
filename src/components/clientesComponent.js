@@ -151,77 +151,83 @@ const handleSubmit = (event) => {
       setValidated(true);
     }
     else{
-    setValidated(true);
-    if(direccion&&nombre&&email&&cedula&&telefono&&fechaNacimiento){
-        let fecha = new Date(fechaNacimiento);
-        if(buttonName==="Modificar"){
-            actualizarCliente({
-                nombre:nombre,
-                direccion:direccion,
-                email:email,
-                telefono:telefono,
-                cedula:cedula,
-                fechaNacimiento:fecha.toISOString().split('T')[0],
-                anticipado:anticipado,
-                precioSesion:precioSesion,
-                habilitado:habilitado
-              }).then(response=>{
-                  setValidated(false);
-                if(response.request.status===200){
-                    setShow3(true)
-                    setSuccess("actualizado")
-                    getClientes().then(response=>{
-                        onChange(response.data.clientes)
-                    })
-                  }else{
-                      setError("No se pudo crear el cliente: Verifique la información ingresada");
-                      setShow2(true)
-                  }
-              }).catch(error=>{
-                console.log(error)
-                if(error.response.status===401){
-                    localStorage.removeItem("token")
-                   navigate("/")
-                }else{
+        setValidated(true);
+        if(direccion&&nombre&&email&&cedula&&telefono&&fechaNacimiento){
+            let fecha = new Date(fechaNacimiento);
+            if(buttonName==="Modificar"){
+                actualizarCliente({
+                    nombre:nombre,
+                    direccion:direccion,
+                    email:email,
+                    telefono:telefono,
+                    cedula:cedula,
+                    fechaNacimiento:fecha.toISOString().split('T')[0],
+                    anticipado:anticipado,
+                    precioSesion:precioSesion,
+                    habilitado:habilitado
+                }).then(response=>{
                     setValidated(false);
-                    setError("No se pudo crear el cliente: Verifique la información ingresada");
-                    setShow2(true)
-                }
-              })
-        }else{
-            crearCliente({
-                nombre:nombre,
-                direccion:direccion,
-                email:email,
-                telefono:telefono,
-                cedula:cedula,
-                fechaNacimiento:fecha.toISOString().split('T')[0],
-                anticipado:anticipado
-              }).then(response=>{
-                  setValidated(false);
-                if(response.request.status===200){
-                    setShow3(true)
-                    setSuccess("creado")
-                    getClientes().then(response=>{
-                        onChange(response.data.clientes)
-                    })
-                  }else{
-                      setError("No se pudo crear el cliente: Verifique la información ingresada");
-                      setShow2(true)
-                  }
-              }).catch(error=>{
-                if(error.response.status===401){
-                    localStorage.removeItem("token")
+                    if(response.request.status===200){
+                        setShow3(true)
+                        setSuccess("actualizado")
+                        getClientes().then(response=>{
+                            onChange(response.data.clientes)
+                        })
+                    }else{
+                        setError("No se pudo crear el cliente: Verifique la información ingresada");
+                        setShow2(true)
+                    }
+                }).catch(error=>{
+                    console.log(error)
+                    if(error.response.status===401){
+                        localStorage.removeItem("token")
                     navigate("/")
-                }else{
+                    }else{
+                        setValidated(false);
+                        setError("No se pudo crear el cliente: Verifique la información ingresada");
+                        setShow2(true)
+                    }
+                })
+            }else{
+                crearCliente({
+                    nombre:nombre,
+                    direccion:direccion,
+                    email:email,
+                    telefono:telefono,
+                    cedula:cedula,
+                    fechaNacimiento:fecha.toISOString().split('T')[0],
+                    anticipado:anticipado
+                }).then(response=>{
                     setValidated(false);
-                    setError("No se pudo crear el cliente: Verifique la información ingresada");
-                    setShow2(true)
-                }
-              })
+                    if(response.request.status===200){
+                        setShow3(true)
+                        setSuccess("creado")
+                        getClientes().then(response=>{
+                            onChange(response.data.clientes)
+                        })
+                    }else{
+                        setError("No se pudo crear el cliente: Verifique la información ingresada");
+                        setShow2(true)
+                    }
+                }).catch(error=>{
+                    if(error.response.status===401){
+                        localStorage.removeItem("token")
+                        navigate("/")
+                    }else{
+                        setValidated(false);
+                        setError("No se pudo crear el cliente: Verifique la información ingresada");
+                        setShow2(true)
+                    }
+                })
+            }
+            handleClose();
+        }else{
+            setValidated(false);
+            setError("Verifique que todos los campos estén diligenciados");
+            setShow2(true)
+            handleClose();
         }
-        handleClose();
-    }}
+    }
   };
 
   const handleDelete = () => {
