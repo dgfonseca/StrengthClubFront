@@ -4,7 +4,7 @@ import { useTable, useFilters, useSortBy } from "react-table";
 import { Row,Col,Form,Modal, Alert,ListGroup } from 'react-bootstrap';
 import Button from '@mui/material/Button';
 import SendIcon from '@mui/icons-material/Send';
-import { getContabilidadClientes, notificarClienteCorreo,getAbonosCliente } from "../apis/Clientes";
+import { getContabilidadClientes, notificarClienteCorreo,getAbonosCliente, getDetalleContabilidadCliente } from "../apis/Clientes";
 import { useNavigate } from "react-router-dom";
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -21,6 +21,14 @@ import { FixedSizeList } from 'react-window';
 
 export default function ClientesContabilidadPanel({data2}){
 const navigate = useNavigate();
+const [detalleContabilidadCliente, setDetalleContabilidadCliente]=useState({
+    "sesionesVirtualesTomadas": null,
+    "deudaSesiones": null,
+    "deuda": null,
+    "sesionesTomadas": null,
+    "abonos": null,
+    "anticipado": false
+})
 const [ventas, setVentas] = useState([])
 const [abonos, setAbonos] = useState([])
 const [contenidoVenta, setContenidoVenta]=useState([])
@@ -88,20 +96,24 @@ const handleSubmit = async()=>{
                     {cedula:cliente.cedula,fechaInicio:fechaInicio,fechaFin:fechaFin}
                 )
                 if(response.request.status!==200){
-                    arr.push("No se pudo notificar el cliente: "+cliente.nombre + ".")
+                    arr.push("No se pudo notificar el cliente: "+cliente.nombre + ". ")
                 }
             } catch (error) {
                 if(error.response.status===401){
                     localStorage.removeItem("token")
                    navigate("/")
                 }else{
-                    arr.push("No se pudo notificar el cliente: "+cliente.nombre  + ".")
+                    arr.push("No se pudo notificar el cliente: "+cliente.nombre  + ". ")
                 }
             }
             
         }
         if(arr.length>0){
-            setError(arr);
+            let errors = ""
+            for(let element of arr){
+                errors=errors.concat(element)
+            }
+            setError(errors);
             setShow2(true)
         }else{
             setShow3(true)
@@ -194,12 +206,27 @@ const {
             "cliente":e.cells[1].value
         }).then(result=>{
             setAbonos(result.data.abonos)
-            console.log(result.data.abonos)
-            setShowContenidoSaldo(true)
+            getDetalleContabilidadCliente({
+                "cedula":e.cells[1].value
+            }).then(result=>{
+                setDetalleContabilidadCliente(result.data.data);
+                setShowContenidoSaldo(true)
+            }).catch(error=>{
+                if(error.response.status===401){
+                    localStorage.removeItem("token")
+                   navigate("/")
+                }else{
+                    setError("No se pudo cargar la información del cliente")
+                    setShow2(true)
+                }
+            })
         }).catch(error=>{
             if(error.response.status===401){
                 localStorage.removeItem("token")
                navigate("/")
+            }else{
+                setError("No se pudo cargar la información del cliente")
+                setShow2(true)
             }
         })
     }).catch(error=>{
@@ -269,11 +296,65 @@ const {
                     })}
                 </tbody>
             </table>
-            <Modal show={showContenidoSaldo} onHide={()=>{setShowContenidoSaldo(false);setContenidoVenta([])}} backdrop="static" keyboard={false}>
+            <Modal show={showContenidoSaldo} onHide={()=>{setShowContenidoSaldo(false);setContenidoVenta([]);setDetalleContabilidadCliente({
+    "sesionesVirtualesTomadas": null,
+    "deudaSesiones": null,
+    "deuda": null,
+    "sesionesTomadas": null,
+    "abonos": null,
+    "anticipado": false
+})}} backdrop="static" keyboard={false}>
                 <Modal.Header closeButton>
                     <Modal.Title>Cliente</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
+                    <Form.Group className="mb-3">
+                        <Form.Label style={{color:"black"}}>Anticipado:</Form.Label>
+                        <Form.Check
+                            disabled
+                            defaultChecked={detalleContabilidadCliente.anticipado}
+                        />
+                    </Form.Group>
+                    {
+                            detalleContabilidadCliente.sesionesVirtualesTomadas!=null?
+                        <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea2">
+                            <Form.Label style={{color:"black"}}>Sesiones Virtuales Tomadas</Form.Label>
+                            <Form.Control type="textarea" disabled defaultValue={detalleContabilidadCliente.sesionesVirtualesTomadas} />
+                        </Form.Group>:<br></br>
+                    }
+                    <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea2">
+                        <Form.Label style={{color:"black"}}>Sesiones Tomadas</Form.Label>
+                        <Form.Control type="textarea" disabled  defaultValue={detalleContabilidadCliente.sesionesTomadas} />
+                    </Form.Group>
+                        {
+                            detalleContabilidadCliente.sesionesPagadas!=null?
+                            <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea2">
+                                <Form.Label style={{color:"black"}}>Sesiones Pagadas</Form.Label>
+                                <Form.Control type="textarea" disabled  defaultValue={detalleContabilidadCliente.sesionesPagadas} />
+                            </Form.Group>:<br></br>
+                        }
+                    {
+                        detalleContabilidadCliente.sesionesRestantes!=null?
+                        <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea2">
+                            <Form.Label style={{color:"black"}}>Sesiones Restantes</Form.Label>
+                            <Form.Control type="textarea" disabled  defaultValue={detalleContabilidadCliente.sesionesRestantes} />
+                        </Form.Group>:<br></br>
+                    }
+                    {
+                        detalleContabilidadCliente.deudaSesiones!=null?
+                        <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea2">
+                            <Form.Label style={{color:"black"}}>Deuda Sesiones</Form.Label>
+                            <Form.Control type="textarea" disabled  defaultValue={detalleContabilidadCliente.deudaSesiones} />
+                        </Form.Group>:<br></br>
+                    }
+                    <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea2">
+                        <Form.Label style={{color:"black"}}>Abonos</Form.Label>
+                        <Form.Control type="textarea" disabled  defaultValue={detalleContabilidadCliente.abonos} />
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea2">
+                        <Form.Label style={{color:"black"}}>Deuda</Form.Label>
+                        <Form.Control type="textarea" disabled  defaultValue={detalleContabilidadCliente.deuda} />
+                    </Form.Group>
                     <Form noValidate onSubmit={handleSubmit}>
                         <Form.Group>
                             <Form.Label style={{color:"black"}}>Compras</Form.Label>
@@ -324,7 +405,14 @@ const {
                     </Form>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={()=>{setShowContenidoSaldo(false);setContenidoVenta([])}}>
+                    <Button variant="secondary" onClick={()=>{setShowContenidoSaldo(false);setContenidoVenta([]);setDetalleContabilidadCliente({
+    "sesionesVirtualesTomadas": null,
+    "deudaSesiones": null,
+    "deuda": null,
+    "sesionesTomadas": null,
+    "abonos": null,
+    "anticipado": false
+})}}>
                         Cerrar
                     </Button>
                 </Modal.Footer>

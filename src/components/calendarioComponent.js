@@ -176,6 +176,7 @@ export default function CalendarPanel(){
             }
         })
     }
+    
     function parseClientes(){
         getClientes().then(result=>{
             let showClientes = []
