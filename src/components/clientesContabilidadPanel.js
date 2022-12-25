@@ -4,7 +4,7 @@ import { useTable, useFilters, useSortBy } from "react-table";
 import { Row,Col,Form,Modal, Alert,ListGroup } from 'react-bootstrap';
 import Button from '@mui/material/Button';
 import SendIcon from '@mui/icons-material/Send';
-import { getContabilidadClientes, notificarClienteCorreo,getAbonosCliente, getDetalleContabilidadCliente } from "../apis/Clientes";
+import { getContabilidadClientes, notificarClienteCorreo,notificarTodosCorreo,getAbonosCliente, getDetalleContabilidadCliente } from "../apis/Clientes";
 import { useNavigate } from "react-router-dom";
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -106,7 +106,7 @@ const handleSubmit = async()=>{
                     arr.push("No se pudo notificar el cliente: "+cliente.nombre  + ". ")
                 }
             }
-            
+            await delay(3000);
         }
         if(arr.length>0){
             let errors = ""
@@ -118,10 +118,15 @@ const handleSubmit = async()=>{
         }else{
             setShow3(true)
         }
+        
     }
     setShow(false)
 };
 const [filterInput, setFilterInput] = useState("");
+
+function delay(time) {
+    return new Promise(resolve => setTimeout(resolve, time));
+  }
 
 const handleFilterChange = e => {
   const value = e.target.value || undefined;
