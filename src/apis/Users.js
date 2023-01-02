@@ -19,6 +19,9 @@ async function loginApi(body){
 async function crearUsuario(body){
       return await axios.post("https://strength-club-sprint1.herokuapp.com/register",body, { headers: authHeader() });
 }
+async function actualizarUsuario(body){
+      return await axios.put("https://strength-club-sprint1.herokuapp.com/actualizarUsuario",body, { headers: authHeader() });
+}
 
 async function getUsuarios(){
     return await axios.get("https://strength-club-sprint1.herokuapp.com/usuarios", { headers: authHeader()});
@@ -32,4 +35,4 @@ async function getCurrentUser(){
   return JSON.parse(localStorage.getItem("token"))
 }
 
-export {loginApi,crearUsuario, getUsuarios,getCurrentUser,getOperacionesUsuarios};
+export {loginApi,crearUsuario, getUsuarios,getCurrentUser,getOperacionesUsuarios,actualizarUsuario};
