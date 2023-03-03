@@ -26,6 +26,7 @@ const [detalleContabilidadCliente, setDetalleContabilidadCliente]=useState({
     "deudaSesiones": null,
     "deuda": null,
     "sesionesTomadas": null,
+    "sesionesDelMes" : null,
     "abonos": null,
     "anticipado": false
 })
@@ -323,18 +324,22 @@ const {
                     {
                             detalleContabilidadCliente.sesionesVirtualesTomadas!=null?
                         <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea2">
-                            <Form.Label style={{color:"black"}}>Sesiones Virtuales Tomadas</Form.Label>
+                            <Form.Label style={{color:"black"}}>Sesiones Virtuales Tomadas en el Mes</Form.Label>
                             <Form.Control type="textarea" disabled defaultValue={detalleContabilidadCliente.sesionesVirtualesTomadas} />
                         </Form.Group>:<br></br>
                     }
                     <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea2">
-                        <Form.Label style={{color:"black"}}>Sesiones Tomadas</Form.Label>
+                        <Form.Label style={{color:"black"}}>Sesiones Tomadas en el Mes</Form.Label>
                         <Form.Control type="textarea" disabled  defaultValue={detalleContabilidadCliente.sesionesTomadas} />
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea2">
+                        <Form.Label style={{color:"black"}}>Sesiones Agendadas en Total</Form.Label>
+                        <Form.Control type="textarea" disabled  defaultValue={detalleContabilidadCliente.sesionesAgendadasTotal} />
                     </Form.Group>
                         {
                             detalleContabilidadCliente.sesionesPagadas!=null?
                             <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea2">
-                                <Form.Label style={{color:"black"}}>Sesiones Pagadas</Form.Label>
+                                <Form.Label style={{color:"black"}}>Sesiones Pagadas en Total</Form.Label>
                                 <Form.Control type="textarea" disabled  defaultValue={detalleContabilidadCliente.sesionesPagadas} />
                             </Form.Group>:<br></br>
                         }
