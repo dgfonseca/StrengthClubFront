@@ -67,13 +67,13 @@ export default function ContabilidadPane(props){
                         <button type="button" className="btn btn-dark" onClick={handleShowClientes}>Contabilidad Clientes</button>
                     </Col>
                     <Col className="col-sm">
-                        <button type="button" className="btn btn-dark" onClick={descargarContabilidadDeudores}>Descargar Estados de Cuenta Deudores</button>
+                        <button type="button" className="btn btn-dark" onClick={descargarContabilidadDeudores}>Estados de Cuenta Deudores</button>
                     </Col>
                     <Col className="col-sm">
-                        <button type="button" className="btn btn-dark" onClick={descargarContabilidadSesiones}>Descargar Contabilidad Sesiones</button>
+                        <button type="button" className="btn btn-dark" onClick={descargarContabilidadSesiones}>Contabilidad Sesiones</button>
                     </Col>
                     <Col className="col-sm">
-                        <button type="button" className="btn btn-dark" onClick={descargarContabilidadProductosAbonos}>Descargar Contabilidad Productos/Abonos</button>
+                        <button type="button" className="btn btn-dark" onClick={descargarContabilidadProductosAbonos}>Contabilidad Productos/Abonos</button>
                     </Col>
                 </Row>
                 <Row className="justify-content-center">
