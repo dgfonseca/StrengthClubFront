@@ -73,7 +73,7 @@ export default function ContabilidadPane(props){
                         <button type="button" className="btn btn-dark" onClick={descargarContabilidadSesiones}>Contabilidad Sesiones</button>
                     </Col>
                     <Col className="col-sm">
-                        <button type="button" className="btn btn-dark" onClick={descargarContabilidadProductosAbonos}>Contabilidad Productos/Abonos</button>
+                        <button type="button" className="btn btn-dark" onClick={descargarContabilidadProductosAbonos}>Contabilidad General</button>
                     </Col>
                 </Row>
                 <Row className="justify-content-center">
