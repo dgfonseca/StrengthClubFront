@@ -16,6 +16,16 @@ export default function ContabilidadPane(props){
     const [productos, setProductos]=useState([]);
     const [clientes, setClientes]=useState([]);
 
+    const descargarContabilidadDeudores = async ()=>{
+
+    }
+    const descargarContabilidadSesiones = async ()=>{
+
+    }
+    const descargarContabilidadProductosAbonos = async ()=>{
+
+    }
+
     const handleShowProductos = async ()=>{
         try {
             const ent = await getContabilidadProductos()
@@ -55,6 +65,15 @@ export default function ContabilidadPane(props){
                     </Col>
                     <Col className="col-sm">
                         <button type="button" className="btn btn-dark" onClick={handleShowClientes}>Contabilidad Clientes</button>
+                    </Col>
+                    <Col className="col-sm">
+                        <button type="button" className="btn btn-dark" onClick={descargarContabilidadDeudores}>Descargar Estados de Cuenta Deudores</button>
+                    </Col>
+                    <Col className="col-sm">
+                        <button type="button" className="btn btn-dark" onClick={descargarContabilidadSesiones}>Descargar Contabilidad Sesiones</button>
+                    </Col>
+                    <Col className="col-sm">
+                        <button type="button" className="btn btn-dark" onClick={descargarContabilidadProductosAbonos}>Descargar Contabilidad Productos/Abonos</button>
                     </Col>
                 </Row>
                 <Row className="justify-content-center">

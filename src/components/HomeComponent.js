@@ -103,8 +103,7 @@ export default function HomePane(props){
     
     const handleClose = () => {setShow(false);setAbono(0);setCliente("")}
     const handleClose4 = () => {setShow4(false);setCliente("");setAbono(0);setFecha(null);setHora(null);setTipo("SUPLEMENTO")}
-    const handleCloseVenta = () => {setShowVenta(false);setProductosSeleccionados([]);
-        setPaquetesSeleccionados([]);setCantidad(1);setPrecioCalculado(0);setPago(false);setFecha(null);setHora(null)};
+    const handleCloseVenta = () => {setShowVenta(false);};
     const handleShow = () => {setShow(true);parseClientes();parseEntrenadores();}; 
     const handleShow4 = () =>{setShow4(true);parseClientes()}
     const handleShowVenta = () => {setShowVenta(true);parseClientes();parseProductos();parsePaquetes();}; 
@@ -346,6 +345,7 @@ function parseProductos(){
                 };
                 date = partsDate[3]+"-"+months[partsDate[1]]+"-"+partsDate[2]+" "+hora
             }
+            handleCloseVenta();
             registrarVenta({
                 cliente:cliente.value,
                 productos:productosSeleccionados,
@@ -391,12 +391,15 @@ function parseProductos(){
                     setShow2(true)
                 }
               }).finally(()=>{
-                  handleCloseVenta()
+                setProductosSeleccionados([]);
+                setPaquetesSeleccionados([]);setCantidad(1);setPrecioCalculado(0);setPago(false);setFecha(null);setHora(null)
               })
         }else{
             setError("No se pudo registrar la venta: Verifique que haya seleccionado un cliente y minimo un producto o paquete");
             setShow2(true)
             handleCloseVenta()
+            setProductosSeleccionados([]);
+            setPaquetesSeleccionados([]);setCantidad(1);setPrecioCalculado(0);setPago(false);setFecha(null);setHora(null)
         }
     }
 
