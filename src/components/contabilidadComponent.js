@@ -5,7 +5,11 @@ import { getContabilidadProductos } from "../apis/Productos";
 import { getContabilidadClientes } from "../apis/Clientes";
 import ProductosContabilidadPanel from "./productosContabilidadPanel";
 import ClientesContabilidadPanel from "./clientesContabilidadPanel";
+import { getContabilidadDeudores, getContabilidadGeneral, getContabilidadSesiones } from "../apis/Contabilidad";
 import { useNavigate } from "react-router-dom";
+import SesionesContabilidadPanel from "./SesionesContabilidadPanel";
+import DeudoresContabilidadPanel from "./DeudoresContabilidadPanel";
+import GeneralContabilidadPanel from "./GeneralContabilidadPanel";
 
 
 
@@ -15,15 +19,40 @@ export default function ContabilidadPane(props){
     const [show, setShow]=useState();
     const [productos, setProductos]=useState([]);
     const [clientes, setClientes]=useState([]);
+    const [sesiones, setSesiones]=useState([]);
+    const [general, setGeneral] = useState([]);
+    const [deudores,setDeudores]=useState([]);
 
     const descargarContabilidadDeudores = async ()=>{
+        try {
+            const ent = await getContabilidadDeudores();
+            setDeudores(ent.data.contabilidad)
+            setShow("Deudores")
+        } catch (error) {
+            localStorage.removeItem("token")
+            navigate("/")
+        }
 
     }
     const descargarContabilidadSesiones = async ()=>{
-
+        try{
+            const ent = await getContabilidadSesiones()
+            setSesiones(ent.data.sesiones)
+            setShow("Sesiones")
+        } catch(error){
+            localStorage.removeItem("token")
+            navigate("/")
+        }
     }
     const descargarContabilidadProductosAbonos = async ()=>{
-
+        try{
+            const ent = await getContabilidadGeneral();
+            setGeneral(ent.data.contabilidad)
+            setShow("General")
+        }catch(error){
+            localStorage.removeItem("token")
+            navigate("/")
+        }
     }
 
     const handleShowProductos = async ()=>{
@@ -54,6 +83,12 @@ export default function ContabilidadPane(props){
             return<ClientesContabilidadPanel data2={clientes}></ClientesContabilidadPanel>
         }else if(show==="Productos"){
             return <ProductosContabilidadPanel data2={productos}></ProductosContabilidadPanel>
+        }else if(show==="Sesiones"){
+            return <SesionesContabilidadPanel data2={sesiones}></SesionesContabilidadPanel>
+        }else if(show==="Deudores"){
+            return <DeudoresContabilidadPanel data2={deudores}></DeudoresContabilidadPanel>
+        }else if(show==="General"){
+            return <GeneralContabilidadPanel data2={general}></GeneralContabilidadPanel>
         }
     }
 
