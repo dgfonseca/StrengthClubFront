@@ -8,7 +8,7 @@ import 'moment-timezone'
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import Select from 'react-select'
 import  {getClientes} from "../apis/Clientes";
-import  {getSesiones,crearSesion,registrarAsistencia,desagendarSesion, crearSesionIcs,borrarSesionesEntrenador} from "../apis/Sesiones"
+import  {getSesiones,crearSesion,registrarAsistencia,desagendarSesion, crearSesionIcs,borrarSesionesEntrenador,borrarVentasSesionesEntrenador} from "../apis/Sesiones"
 import {getEntrenadores} from "../apis/Entrenadores"
 import TimePicker from 'react-time-picker';
 import DatePicker from 'react-date-picker';
@@ -217,6 +217,11 @@ export default function CalendarPanel(){
         let arr = []
         try {
             await borrarSesionesEntrenador({
+                entrenador:icsData[0].entrenador,
+                fechaInicio: fechaInicio,
+                fechaFin: fechaFin
+            })
+            await borrarVentasSesionesEntrenador({
                 entrenador:icsData[0].entrenador,
                 fechaInicio: fechaInicio,
                 fechaFin: fechaFin

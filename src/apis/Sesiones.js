@@ -32,4 +32,8 @@ async function borrarSesionesEntrenador(body){
   return await axios.delete("https://strength-club-sprint1.herokuapp.com/sesionesEntrenador", {headers: authHeader(),data:body})
 }
 
-export {getSesiones,crearSesion,registrarAsistencia,desagendarSesion,crearSesionIcs,borrarSesionesEntrenador};
+async function borrarVentasSesionesEntrenador(body){
+  return await axios.delete("https://strength-club-sprint1.herokuapp.com/ventasSesionesEntrenador",{headers: authHeader(),data:body})
+}
+
+export {getSesiones,crearSesion,registrarAsistencia,desagendarSesion,crearSesionIcs,borrarSesionesEntrenador,borrarVentasSesionesEntrenador};
