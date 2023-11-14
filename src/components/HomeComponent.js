@@ -103,7 +103,7 @@ export default function HomePane(props){
     
     const handleClose = () => {setShow(false);setAbono(0);setCliente("")}
     const handleClose4 = () => {setShow4(false);setCliente("");setAbono(0);setFecha(null);setHora(null);setTipo("SUPLEMENTO")}
-    const handleCloseVenta = () => {setShowVenta(false);};
+    const handleCloseVenta = () => {setCliente(null);setPaqueteSeleccionado(null);setProductoSeleccionado(null);setShowVenta(false);setPrecioCalculado(0);setProductoCarritoSeleccionado(null);setPaqueteCarritoSeleccionado(null);setFecha(null);setHora(null);setCantidadPaquete(0);setCantidad(0)};
     const handleShow = () => {setShow(true);parseClientes();parseEntrenadores();}; 
     const handleShow4 = () =>{setShow4(true);parseClientes()}
     const handleShowVenta = () => {setShowVenta(true);parseClientes();parseProductos();parsePaquetes();}; 
