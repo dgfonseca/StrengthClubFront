@@ -71,6 +71,7 @@ const filtrarClientes = ()=>{
     }
 }
 const handleSubmit = async()=>{
+    handleClose(false)
     if(!notificacion){
         notificarClienteCorreo({cedula:cliente,fechaInicio:fechaInicio,fechaFin:fechaFin}).then(response=>{
             if(response.request.status===200){
