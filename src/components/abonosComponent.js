@@ -185,6 +185,7 @@ const handleSubmit = (event) => {
                     </tr>
                     ))}
                 </thead>
+                
                 <tbody {...getTableBodyProps()}>
                     {
                     page.map((row, i) => {
