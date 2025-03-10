@@ -217,6 +217,7 @@ export default function CalendarPanel(){
     const handleUploadIcs=async ()=>{
         let errors=[];
         try {
+            console.log("ICS: ",icsData)
             await borrarSesionesEntrenador({
                 entrenador:icsData[0].entrenador,
                 fechaInicio: fechaInicio,
