@@ -214,7 +214,7 @@ export default function CalendarPanel(){
 
 
     const handleUploadIcs=async ()=>{
-        let errors;
+        let errors=[];
         try {
             await borrarSesionesEntrenador({
                 entrenador:icsData[0].entrenador,
@@ -232,6 +232,8 @@ export default function CalendarPanel(){
                         sesiones:icsData
                     })
                     errors = res.errorClients
+                    console.log("Errors ",errors)
+                    console.log("Response ",res)
                     setValidated(false);
                 } catch (error) {
                     console.error("ERROR cargando: ",error)
