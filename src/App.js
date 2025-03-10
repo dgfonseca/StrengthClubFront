@@ -18,7 +18,7 @@ function App() {
 
   return (
     <Router>
-      <div className="App" style={{ backgroundImage: `url("./img/strength.png")`, backgroundRepeat: "no-repeat", backgroundPositionY: "60%", backgroundPositionX: "50%", backgroundSize:"80% 80%"}}>
+      <div className="App" style={{ backgroundImage: `url("/img/strength.png")`, backgroundRepeat: "no-repeat", backgroundPositionY: "60%", backgroundPositionX: "50%", backgroundSize:"80% 80%"}}>
         <Container fluid>
           <Row>
             <Navbar className="navbar navbar-expand-lg navbar-dark" collapseOnSelect>

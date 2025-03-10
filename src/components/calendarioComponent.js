@@ -253,7 +253,7 @@ export default function CalendarPanel(){
             }
             parseSesiones()
         } catch (error) {
-                setError("No se pudo borrar el calendario del entrenador para volver a cargarlo, vuelva a intentarlo");
+                setError("No se pudo borrar el calendario del entrenador para volver a cargarlo, vuelva a intentarlo ",error.stack);
                 setShow2(true);
         }
         
