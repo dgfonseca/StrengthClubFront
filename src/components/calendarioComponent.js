@@ -170,6 +170,7 @@ export default function CalendarPanel(){
             })
             setSesiones(arrSesiones);
         }).catch(error=>{
+            console.error("Error parse sesiones:",error)
             if(error.response.status===401){
                 localStorage.removeItem("token")
                 navigate("/")
