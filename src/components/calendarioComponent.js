@@ -232,7 +232,7 @@ export default function CalendarPanel(){
                     res =await crearSesionIcs({
                         sesiones:icsData
                     })
-                    errors = res.errorClients
+                    errors = res.data.errorClients
                     console.log("Errors ",errors)
                     console.log("Response ",res)
                     setValidated(false);
