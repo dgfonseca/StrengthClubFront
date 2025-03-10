@@ -244,15 +244,17 @@ export default function CalendarPanel(){
             if(errors.length!==0){
                 let errorsMsg = "Los eventos con la siguiente descripción no se cargaron correctamente:"
                 for(let element of errors){
-                    errors=errorsMsg.concat(" "+element+",")
+                    errorsMsg=errorsMsg.concat(" "+element+",")
                 }
-                setError(errors);
+                setError(errorsMsg);
                 setShow2(true);
             }else{
                 setShow3(true)
             }
             parseSesiones()
         } catch (error) {
+                console.log(error)
+                console.log(error.stack)
                 setError("No se pudo borrar el calendario del entrenador para volver a cargarlo, vuelva a intentarlo ",error.stack);
                 setShow2(true);
         }
