@@ -255,7 +255,11 @@ export default function CalendarPanel(){
             }else{
                 setShow3(true)
             }
-            parseSesiones()
+            try{
+                parseSesiones()
+            }catch (error){
+                console.log("Error cargando sesiones post carga ICS "+error)
+            }
         } catch (error) {
                 console.log(error)
                 console.log(error.stack)
