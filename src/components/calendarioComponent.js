@@ -74,10 +74,13 @@ export default function CalendarPanel(){
             const reader = new FileReader()
             reader.onload = async (e) => { 
 
+
             const json = ical.parseString(e.target.result)
+            console.log("JSON, {}",json)
             var now = moment();
             let icsDataSesion=[]
             let entrenador = json.calendarData['x-wr-calname'];
+            console.log("Entrenador ",entrenador)
             json.events.forEach(element => {
                 var input = new Date(element.dtstart.value)
                 input.setHours(input.getHours()+5)
